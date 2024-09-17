@@ -43,5 +43,5 @@ services:
             - "1026:1026"
         command: -dbhost mongodb
 
-    volumes:
-        mongo-db: ~
+volumes:
+    mongodb:
