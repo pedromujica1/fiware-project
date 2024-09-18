@@ -1,47 +1,33 @@
-version: "3.1"
+version: "3.7"
 
 services:
-    iot-agent:
-        image: fiware/iotagent-lorawan
-        hostname: iot-agent
-        container_name: fiware-iot-agent
-        depends_on:
-            - mongodb
-        expose:
-            - "4041"
-        ports:
-            - "4041:4041"
-        environment:
-            - "IOTA_CB_HOST=orion"
-            - "IOTA_CB_PORT=1026"
-            - "IOTA_NORTH_PORT=4041"
-            - "IOTA_REGISTRY_TYPE=mongodb"
-            - "IOTA_MONGO_HOST=mongo-db"
-            - "IOTA_MONGO_PORT=27017"
-            - "IOTA_MONGO_DB=iotagent-lorawan"
-            - "IOTA_PROVIDER_URL=http://iot-agent:4041"
+  mongodb:
+    extends:
+      file: docker-compose-dev.yml
+      service: mongodb
+    volumes:
+      - mongo_data:/data/db
 
-    mongodb:
-        image: mongo:3.6
-        hostname: mongo-db
-        container_name: db-mongo
-        ports:
-            - "27017:27017"
-        command: --bind_ip_all --smallfiles
-        volumes:
-            - mongodb:/data
+  orion:
+    extends:
+      file: docker-compose-dev.yml
+      service: orion
+    command: -dbhost mongodb -port 1026 -logLevel INFO
 
-    orion:
-        image: fiware/orion
-        hostname: orion
-        container_name: fiware-orion
-        depends_on:
-            - mongodb
-        expose:
-            - "1026"
-        ports:
-            - "1026:1026"
-        command: -dbhost mongodb
+  iotagent-lora:
+    depends_on:
+      - mongodb
+      - orion
+    entrypoint: bin/iotagent-lora docker/config-docker.js
+    hostname: iotagent-lora
+    image: ioeari/iotagent-lora
+    ports:
+      - "4041:4041"
+    networks:
+      - LoRaWAN
 
 volumes:
-    mongodb:
+  mongo_data:
+
+networks:
+  LoRaWAN: {}
