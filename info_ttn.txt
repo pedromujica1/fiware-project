@@ -2,12 +2,14 @@ TOKEN: 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
 
 Application ID : envcity-aqm
 APP key: E078A5F764CFA112E6BA26496CA19A5B
+API key: XAC7S4CKMKWV66LRIXUG5D2DM2T2UTHOSRNW53A
 DevEUI: 70 B3 D5 7E D0 06 78 EB
 AppEUI: 12 31 23 12 31 23 12 31
 
-    Host (step 3): 
+    Host (step 3): au1.cloud.thethings.network:1883
     Username: envcity-aqm@ttn
-    Password (step 3)
+    Password (step 3):NNSXS.6DIHV37JG2PDFWCM3RG2IWBCUBHGA4KXCAVBGDY.HZ2G3RHFNV7MAWY2JIPLN4GXXT5LTTP6ZTQQIW5HOYBC6AZEOMVA
+    
 
 curl localhost:4041/iot/devices -s -S --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'fiware-service: smartgondor' --header 'fiware-servicepath: /gardens' -d @- <<EOF
 {
