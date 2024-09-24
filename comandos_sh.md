@@ -14,3 +14,6 @@ curl -X DELETE \
   --header 'fiware-service: smartgondor' \
   --header 'fiware-servicepath: /gardens'
 
+## ESTUDAR INTEGRAÇÃO
+- https://www.thethingsindustries.com/docs/integrations/mqtt/
+
