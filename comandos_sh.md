@@ -1,8 +1,8 @@
-##Terminal comands IOT AGENT
+## Terminal comands IOT AGENT
 
 curl localhost:1026/v2/entities/<id_entidade> -s -S -H 'Accept: application/json' --header 'fiware-service: smartgondor' --header 'fiware-servicepath: /gardens' | python -mjson.tool
 
-##Listar entidades orion context-broker
+## Listar entidades orion context-broker
 
 curl localhost:1026/v2/entities/ -s -S -H 'Accept: application/json' --header 'fiware-service: smartgondor' --header 'fiware-servicepath: /gardens' | python -mjson.tool
 
