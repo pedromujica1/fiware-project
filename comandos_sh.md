@@ -21,3 +21,7 @@ curl localhost:1026/v2/entities/SensorQualidadeAr_Londrina -s -S -H 'Accept: app
 
 ## Requests FIWARE
 https://www.postman.com/fiware/workspace~b6e7fcf4-ff0c-47cb-ada4-e222ddeee5ac/request/j8obq1y/list-all-provisioned-devices
+
+## ESTUDAR IOT AGENT JSON
+
+https://github.com/telefonicaid/iotagent-json/blob/master/docs/usermanual.md#mqtt-binding
