@@ -1,0 +1,329 @@
+{
+    "id": "SensorQualidadeAr_Londrina",
+    "type": "LoraDevice",
+    "Best_CO": {
+        "type": "Float",
+        "value": 131.740049592,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "Best_NO2": {
+        "type": "Float",
+        "value": 92.906658022,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "Best_OX": {
+        "type": "Float",
+        "value": 37.776728686,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "Best_SO2": {
+        "type": "Float",
+        "value": 296.496484157,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "CO_1": {
+        "type": "Float",
+        "value": 186.57079646,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "CO_2": {
+        "type": "Float",
+        "value": 110.252212389,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "CO_3": {
+        "type": "Float",
+        "value": 98.397139926,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "CO_4": {
+        "type": "Float",
+        "value": -868.650442478,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "CO_AE": {
+        "type": "Float",
+        "value": 334.68,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "CO_WE": {
+        "type": "Float",
+        "value": 366.37,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "DATA": {
+        "type": "Date",
+        "value": "18/6/24",
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "HORA": {
+        "type": "Text",
+        "value": "20:19:42",
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "NO2_1": {
+        "type": "Float",
+        "value": 94.409638554,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "NO2_2": {
+        "type": "Float",
+        "value": 93.681992544,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "NO2_3": {
+        "type": "Float",
+        "value": 90.628342968,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "NO2_4": {
+        "type": "Float",
+        "value": -597.34939759,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "NO2_AE": {
+        "type": "Float",
+        "value": 222.56,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "NO2_WE": {
+        "type": "Float",
+        "value": 256.68,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "OX_1": {
+        "type": "Float",
+        "value": 41.222501382,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "OX_2": {
+        "type": "Float",
+        "value": 38.03611307,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "OX_3": {
+        "type": "Float",
+        "value": 34.071571606,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "OX_4": {
+        "type": "Float",
+        "value": -746.505062721,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "OX_AE": {
+        "type": "Float",
+        "value": 222.37,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "OX_WE": {
+        "type": "Float",
+        "value": 231.93,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "SO2_1": {
+        "type": "Float",
+        "value": -579.046263345,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "SO2_2": {
+        "type": "Float",
+        "value": -97.927046263,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "SO2_3": {
+        "type": "Float",
+        "value": 24.679715302,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "SO2_4": {
+        "type": "Float",
+        "value": 568.313253012,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "SO2_AE": {
+        "type": "Float",
+        "value": 317.62,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "SO2_WE": {
+        "type": "Float",
+        "value": 643.68,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "Temperatura_1": {
+        "type": "Float",
+        "value": 29.89,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    },
+    "TimeInstant": {
+        "type": "DateTime",
+        "value": "2024-10-23T17:32:50.827Z",
+        "metadata": {}
+    },
+    "Umidade_1": {
+        "type": "Float",
+        "value": 71.35,
+        "metadata": {
+            "TimeInstant": {
+                "type": "DateTime",
+                "value": "2024-10-23T17:32:50.827Z"
+            }
+        }
+    }
+}

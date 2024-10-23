@@ -17,3 +17,10 @@ curl -X DELETE \
 ## ESTUDAR INTEGRAÇÃO
 - https://www.thethingsindustries.com/docs/integrations/mqtt/
 
+## listar iot agents
+curl --location 'http://localhost:4041/iot/devices' \
+--header 'fiware-service: openiot' \
+--header 'fiware-servicepath: /'
+
+## Verificar ultimo dado enviado ao context broker
+curl localhost:1026/v2/entities/SensorQualidadeAr_Londrina -s -S -H 'Accept: application/json' --header 'fiware-service: openiot' --header 'fiware-servicepath: /airQuality /' | python3 -mjson.tool
