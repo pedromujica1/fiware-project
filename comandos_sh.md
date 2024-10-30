@@ -17,7 +17,8 @@ curl --location 'http://localhost:4041/iot/devices' \
 --header 'fiware-servicepath: /'
 
 ## Verificar ultimo dado enviado ao context broker
-curl localhost:1026/v2/entities/SensorQualidadeAr_Londrina -s -S -H 'Accept: application/json' --header 'fiware-service: openiot' --header 'fiware-servicepath: /airQuality /' | python3 -mjson.tool
+curl localhost:1026/v2/entities/SensorQualidadeAr_Londrina -s -S -H 'Accept: application/json' --header 'fiware-service:openiot' --header 'fiware-servicepath: /airQuality' | python3 -mjson.tool
+
 
 ## Requests FIWARE
 https://www.postman.com/fiware/workspace~b6e7fcf4-ff0c-47cb-ada4-e222ddeee5ac/request/j8obq1y/list-all-provisioned-devices
@@ -25,3 +26,6 @@ https://www.postman.com/fiware/workspace~b6e7fcf4-ff0c-47cb-ada4-e222ddeee5ac/re
 ## ESTUDAR IOT AGENT JSON
 
 https://github.com/telefonicaid/iotagent-json/blob/master/docs/usermanual.md#mqtt-binding
+
+## Rodar docker
+docker-compose -f docker/docker-compose.yml up
