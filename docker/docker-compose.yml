@@ -1,12 +1,14 @@
 version: "3.7"
 
 services:
+
   mongodb:
     extends:
       file: docker-compose-dev.yml
       service: mongodb
     volumes:
       - mongo_data:/data/db
+  
 
   orion:
     extends:
@@ -27,7 +29,7 @@ services:
       - LoRaWAN
 
 volumes:
-  mongo_data:
+  mongo_data: 
 
 networks:
   LoRaWAN: {}
