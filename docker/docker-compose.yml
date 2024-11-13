@@ -7,8 +7,7 @@ services:
       file: docker-compose-dev.yml
       service: mongodb
     volumes:
-      - mongo_data:/data/db
-  
+      - lora_mongo_data:/data/db
 
   orion:
     extends:
@@ -27,9 +26,22 @@ services:
       - "4041:4041"
     networks:
       - LoRaWAN
+    
+  draco:
+    image: ging/fiware-draco:1.1.0
+    container_name: draco
+    depends_on:
+        - mongodb
+    environment:
+        - NIFI_WEB_HTTP_PORT=9090
+    ports:
+        - "9090:9090"
+        - "5050:5050"
+    healthcheck:
+        test: curl --fail -s http://localhost:9090/nifi-api/system-diagnostics || exit 1
 
 volumes:
-  mongo_data: 
+  lora_mongo_data: 
 
 networks:
   LoRaWAN: {}
