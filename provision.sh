@@ -50,7 +50,7 @@ curl --location --request POST 'http://localhost:4041/iot/devices' \
                     "application_server": {
                         "host": "au1.cloud.thethings.network",
                         "username": "envcity-aqm@ttn",
-                        "password": "NNSXS.MEBFVHICSHLPKAUOXL2I5RLMZILIFM6PWTSIHOY.UD7ICI2IIMKG7F6KYKJPQQWUTE4ZPB6XFU5KHWM3PZQEDSP4JVLA",
+                        "password": "",
                         "provider": "TTN"
                     },
                     "app_eui": "1231231231231231",

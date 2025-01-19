@@ -13,7 +13,7 @@ services:
     image: fiware/orion:${ORION_VERSION:-3.3.1}
     ports:
       - "1026:1026"
-    command: -logLevel DEBUG -noCache -dbhost mongodb
+    command: -logLevel DEBUG -noCache -dbhost localhost:27017
     depends_on:
       - mongodb
     healthcheck:
