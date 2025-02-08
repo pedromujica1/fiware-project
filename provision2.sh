@@ -2,7 +2,7 @@
 
 
 curl --location --request POST 'http://localhost:4041/iot/devices' \
---header 'fiware-service: openiot' \
+--header 'fiware-service: ' \
 --header 'fiware-servicepath: /airQuality' \
 --header 'Content-Type: application/json' \
 --data-raw '{

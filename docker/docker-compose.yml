@@ -41,23 +41,35 @@ services:
         - "POSTGRES_PASSWORD=password"
         - "POSTGRES_USER=postgres"
         - "POSTGRES_DB=postgres"
+    volumes:
+        - postgres_data:/var/lib/postgresql/data
+  
+  cygnus:
+    image: fiware/cygnus-ngsi:latest
+    hostname: cygnus
+    container_name: fiware-cygnus
+    networks:
+        - LoRaWAN
+    depends_on:
+        - postgres-db
+    expose:
+        - "5080"
+    ports:
+        - "5055:5055"
+        - "5080:5080"
+    environment:
+        - "CYGNUS_POSTGRESQL_HOST=postgres-db"
+        - "CYGNUS_POSTGRESQL_PORT=5432"
+        - "CYGNUS_POSTGRESQL_USER=postgres"
+        - "CYGNUS_POSTGRESQL_PASS=password"
+        - "CYGNUS_POSTGRESQL_ENABLE_CACHE=true"
+        - "CYGNUS_POSTGRESQL_SERVICE_PORT=5055"
+        - "CYGNUS_LOG_LEVEL=DEBUG"
+        - "CYGNUS_API_PORT=5080"
+        - "CYGNUS_SERVICE_PORT=5055"
+    
 
   
-  draco:
-    image: ging/fiware-draco:1.1.0
-    container_name: draco
-    depends_on:
-        - mongodb
-    environment:
-        - NIFI_WEB_HTTP_PORT=9090
-    ports:
-        - "9090:9090"
-        - "5050:5050"
-    healthcheck:
-        test: curl --fail -s http://localhost:9090/nifi-api/system-diagnostics || exit 1
-    networks:
-      - LoRaWAN
-      
   grafana:
     image: grafana/grafana
     depends_on:
@@ -68,10 +80,14 @@ services:
         - GF_INSTALL_PLUGINS=orchestracities-map-panel,grafana-clock-panel,grafana-worldmap-panel
     networks:
       - LoRaWAN
+    volumes:
+      - grafana_data:/var/lib/grafana
     
 volumes:
   mongo_data_lora: 
   lora_device_data:
+  postgres_data:
+  grafana_data: 
 
 
 networks:
