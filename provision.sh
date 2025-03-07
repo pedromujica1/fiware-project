@@ -38,8 +38,8 @@ curl --location --request POST 'http://localhost:4041/iot/devices' \
                 { "object_id": "so2_4", "name": "SO2_4", "type": "Float"},
                 { "object_id": "so2_ae", "name": "SO2_AE", "type": "Float"},
                 { "object_id": "so2_we", "name": "SO2_WE", "type": "Float"},
-                { "object_id": "temperatura_1", "name": "Temperatura_1", "type": "Float"},
-                { "object_id": "umidade_1", "name": "Umidade_1", "type": "Float"},
+                { "object_id": "Temperatura", "name": "Temperatura", "type": "Float"},
+                { "object_id": "Umidade", "name": "Umidade", "type": "Float"},
                 { "object_id": "data", "name": "DATA", "type": "Text"},
                 { "object_id": "hora", "name": "HORA", "type": "Text"}
             ],
