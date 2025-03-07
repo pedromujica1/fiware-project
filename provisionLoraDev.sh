@@ -1,18 +1,16 @@
 #!/bin/sh
 
-
 curl --location --request POST 'http://localhost:4041/iot/devices' \
---header 'fiware-service: ' \
+--header 'fiware-service: openiot' \
 --header 'fiware-servicepath: /airQuality' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "devices": [
         {
-            "device_id": "env1",
-            "entity_name": "SensorQualidadeAr_Londrina",
-            "entity_type": "LoraDevice",
+            "device_id": "",
+            "entity_name": "example",
             "attributes": [
-             { "object_id": "best_co", "name": "Best_CO", "type": "Float"},
+                { "object_id": "best_co", "name": "Best_CO", "type": "Float"},
                 { "object_id": "best_no2", "name": "Best_NO2", "type": "Float"},
                 { "object_id": "best_ox", "name": "Best_OX", "type": "Float"},
                 { "object_id": "best_so2", "name": "Best_SO2", "type": "Float"},
@@ -39,14 +37,25 @@ curl --location --request POST 'http://localhost:4041/iot/devices' \
                 { "object_id": "so2_3", "name": "SO2_3", "type": "Float"},
                 { "object_id": "so2_4", "name": "SO2_4", "type": "Float"},
                 { "object_id": "so2_ae", "name": "SO2_AE", "type": "Float"},
-                { "object_id": "so2_we", "name": "SO2_WE", "type": "Float"}
-             
+                { "object_id": "so2_we", "name": "SO2_WE", "type": "Float"},
+                { "object_id": "Temperatura", "name": "Temperatura", "type": "Float"},
+                { "object_id": "Umidade", "name": "Umidade", "type": "Float"},
+                { "object_id": "data", "name": "DATA", "type": "Text"},
+                { "object_id": "hora", "name": "HORA", "type": "Text"}
             ],
             "internal_attributes": {
                 "lorawan": {
                     "application_server": {
-                        "host": "localhost:1884"
-                    }
+                        "host": "",
+                        "username": "",
+                        "password": "",
+                        "provider": "TTN"
+                    },
+                    "app_eui": "",
+                    "dev_eui": "",
+                    "application_id": "",
+                    "application_key": "",
+                    "data_model": "application_server"
                 }
             }
         }
