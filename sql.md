@@ -35,7 +35,7 @@ FROM information_schema.columns
 WHERE table_schema = 'openiot' AND table_name = 'airquality_paxcounter_loradevice';
 
 
-SELECT * FROM airquality_paxcounter_loradevicelimit 10;
+SELECT * FROM openiot.airquality_paxcounter_loradevicelimit 10;
 
 
 SELECT 
