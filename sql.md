@@ -1,3 +1,7 @@
+## Estudar Fiware com ML
+
+//https://github.com/ging/fiware-ml-supermarket
+
 ## Comandos SQL
 
 ### Testar cliente SQL
