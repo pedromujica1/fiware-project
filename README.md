@@ -8,7 +8,7 @@
 
 <!-- Descrição -->
 
-Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo LoRaWAN com os componentes da plataforma FIWARE, voltada para Cidades Inteligentes. A solução proposta inclui a conexão com redes LoRaWAN e a execução dos serviços em contêineres, permitindo sua implantação em ambientes de nuvem.
+Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo LoRaWAN com os componentes da plataforma FIWARE, voltada para Cidades Inteligentes. A solução proposta inclui a conexão com a plataforma de The Things Network (TTN) para recebimento dos dados e a execução dos serviços em contêineres, permitindo sua implantação em ambientes de nuvem. Como exemplo, utilizamos uma estação de monitoramento da qualidade do ar equipada com sensores de baixo custo e demonstramos como o Fiware pode ser aplicado para armazenar, processar e visualizar os dados coletados por essa estação.
 
 -   Acess in English: [ReadmeEN.md](README.ja.md)
 
@@ -44,8 +44,6 @@ Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo LoR
 # Contextualização
 
 O ecossistema FIWARE (Cirillo et al., 2019), desenvolvido pela Comissão Europeia, tem com principal objetivo utilizar dados para otimizar a eficiência e a gestão de serviços em diversas áreas. A plataforma possui padrões de coleta, armazenamento e publicação de dados, tendo como exemplo os “Dados de contexto” que representam o estado atual de entidades como sensores, aplicações de tempo real e outros.
-
-Neste tutorial, utilizamos uma estação de monitoramento da qualidade do ar equipada com sensores de baixo custo e demonstramos como o Fiware pode ser aplicado para armazenar, processar e visualizar os dados coletados por essa estação. A comunicação da estação é realizada via protocolo de longa distância LoraWAN (2024), e a plataforma de The Things Network (TTN) para recebimento dos dados.
 
 # Arquitetura do projeto
 
