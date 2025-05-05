@@ -45,6 +45,9 @@ Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo LoR
 
 O ecossistema FIWARE (Cirillo et al., 2019), desenvolvido pela Comissão Europeia, tem com principal objetivo utilizar dados para otimizar a eficiência e a gestão de serviços em diversas áreas. A plataforma possui padrões de coleta, armazenamento e publicação de dados, tendo como exemplo os “Dados de contexto” que representam o estado atual de entidades como sensores, aplicações de tempo real e outros.
 
+![FIWARE Monitor](https://camo.githubusercontent.com/20338462f869e22f514eb10d83325e840c9d68396b336be8e6680d8e453eacda/68747470733a2f2f6669776172652e6769746875622e696f2f636174616c6f6775652f696d672f636174616c6f6775652e706e67)
+
+
 # Arquitetura do projeto
 
 Dentre o vasto catálogo das ferramentas do Fiware, a classificação ocorre de acordo com 5 principais categorias: ferramentas de Deployment, gerenciamento de contexto, processamento, análise e monitoramento de Contexto, Interface para IoT e Robótica. Para o seguinte projeto utilizamos: 
