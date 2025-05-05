@@ -8,9 +8,9 @@
 
 <!-- Descrição -->
 
-Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo LoRaWAN com os componentes da plataforma FIWARE, voltada para Cidades Inteligentes. A solução proposta inclui a conexão com a plataforma de The Things Network (TTN) para recebimento dos dados e a execução dos serviços em contêineres, permitindo sua implantação em ambientes de nuvem. Como exemplo, utilizamos uma estação de monitoramento da qualidade do ar equipada com sensores de baixo custo e demonstramos como o Fiware pode ser aplicado para armazenar, processar e visualizar os dados coletados por essa estação.
+Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo [LoRaWAN](https://lora-alliance.org/) com os componentes da plataforma FIWARE, voltada para Cidades Inteligentes. A solução proposta inclui a conexão com a plataforma de [The Things Network (TTN)](https://www.thethingsindustries.com/stack/) para recebimento dos dados e a execução dos serviços em contêineres, permitindo sua implantação em ambientes de nuvem. Como exemplo, utilizamos uma estação de monitoramento da qualidade do ar equipada com sensores de baixo custo e demonstramos como o Fiware pode ser aplicado para armazenar, processar e visualizar os dados coletados por essa estação.
 
--   Acess in English: [ReadmeEN.md](README.ja.md)
+-   Acess in English: [ReadmeEN.md](EN-README.md)
 
 ## Capítulos
 
@@ -46,14 +46,14 @@ Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo LoR
 O ecossistema **FIWARE** (Cirillo et al., 2019), desenvolvido pela Comissão Europeia, tem como principal objetivo utilizar dados para otimizar a eficiência e a gestão de serviços em diversas áreas. A plataforma adota padrões abertos para coleta, armazenamento e publicação de dados, destacando-se o conceito de **dados de contexto**, que representam o estado atual de entidades como sensores, aplicações em tempo real e outros dispositivos.
 
 <p align="center">
-  <img src="https://camo.githubusercontent.com/20338462f869e22f514eb10d83325e840c9d68396b336be8e6680d8e453eacda/68747470733a2f2f6669776172652e6769746875622e696f2f636174616c6f6775652f696d672f636174616c6f6775652e706e67" alt="FIWARE Monitor" width="400">
+  <img src="https://camo.githubusercontent.com/20338462f869e22f514eb10d83325e840c9d68396b336be8e6680d8e453eacda/68747470733a2f2f6669776172652e6769746875622e696f2f636174616c6f6775652f696d672f636174616c6f6775652e706e67" alt="FIWARE Monitor" width="550">
 </p>
 
 ---
 
 # 🏗️ Arquitetura do Projeto
 
-Dentro do vasto catálogo de ferramentas do FIWARE, os componentes são organizados em cinco categorias principais:
+Dentro do vasto [**catálogo**](https://www.fiware.org/catalogue/) de ferramentas do FIWARE, os componentes são organizados em cinco categorias principais:
 
 - ⚙️ Deployment  
 - 🧠 Gerenciamento de Contexto  
@@ -75,6 +75,13 @@ Para este projeto, foram utilizados os seguintes componentes:
 
 ---
 
+## 🤖 Agente IoT
+
+- [**IoT Agent LoRaWAN**](https://fiware-lorawan.readthedocs.io/en/latest/):  
+  Responsável por integrar dispositivos LoRaWAN ao ecossistema FIWARE. Ele atua como intermediário entre a plataforma **The Things Stack (TTS)** e o **Orion Context Broker**, convertendo os dados recebidos em formato compatível com NGSI para posterior processamento e armazenamento.
+
+---
+
 ## 🗃️ Bancos de Dados (2)
 
 - [**MongoDB**](https://www.mongodb.com/):  
@@ -93,69 +100,49 @@ Para este projeto, foram utilizados os seguintes componentes:
 
 ---
 
+# Pré-requisitos
 
-# Prerequisitos
+## 🐳 Docker e Docker Compose
 
-## Docker e Docker Compose
+Todos os componentes deste projeto serão executados com contâiners [Docker](https://www.docker.com), que permite isolar diferentes serviços em ambientes independentes.
 
-To keep things simple all components will be run using [Docker](https://www.docker.com). **Docker** is a container
-technology which allows to different components isolated into their respective environments.
+### 🔧 Instalação do Docker
 
--   To install Docker on Windows follow the instructions [here](https://docs.docker.com/docker-for-windows/)
--   To install Docker on Mac follow the instructions [here](https://docs.docker.com/docker-for-mac/)
--   To install Docker on Linux follow the instructions [here](https://docs.docker.com/install/)
+- **Windows**: [Instruções oficiais](https://docs.docker.com/docker-for-windows/)  
+- **macOS**: [Instruções oficiais](https://docs.docker.com/docker-for-mac/)  
+- **Linux**: [Instruções oficiais](https://docs.docker.com/install/)
 
-**Docker Compose** is a tool for defining and running multi-container Docker applications. A series of
-[YAML files](https://github.com/FIWARE/tutorials.Historic-Context-Flume/tree/master/docker-compose) are used configure
-the required services for the application. This means all container services can be brought up in a single command.
-Docker Compose is installed by default as part of Docker for Windows and Docker for Mac, however Linux users will need
-to follow the instructions found [here](https://docs.docker.com/compose/install/)
+### 📦 Docker Compose
 
-You can check your current **Docker** and **Docker Compose** versions using the following commands:
+[Docker Compose](https://docs.docker.com/compose/) permite definir e executar múltiplos contêineres com um único comando via arquivos `docker-compose.yml`.  
+> ⚠️ Já vem instalado no Docker Desktop (Windows/macOS). No Linux, siga [estas instruções](https://docs.docker.com/compose/install/).
 
-```console
-docker-compose -v
+### ✅ Verificação de versões
+
+Use os comandos abaixo para checar se as versões estão atualizadas:
+
+```bash
 docker version
+docker compose version
 ```
 
-Please ensure that you are using Docker version 24.0.x or higher and Docker Compose 2.24.x or higher and upgrade if
-necessary.
+Recomendado: Docker 24.0.x ou superior e Docker Compose 2.24.x ou superior.
 
-## WSL
+## 💻 Requisito para Windows: WSL 2
 
+Se estiver usando Windows, é necessário ativar o WSL 2 [(Windows Subsystem for Linux)](https://learn.microsoft.com/en-us/windows/wsl/install) para compatibilidade total com o Docker Desktop.
+🔧 Como instalar o WSL 2
 
-
-# Iniciando
-
-Before you start you should ensure that you have obtained or built the necessary Docker images locally. Please clone the
-repository and create the necessary images by running the commands as shown:
-
-```console
-git clone https://github.com/FIWARE/tutorials.Historic-Context-Flume.git
-cd tutorials.Historic-Context-Flume
-git checkout NGSI-v2
-
-./services create
+Abra o terminal do Windows PowerShell como administrador e execute o comando:
+```cmd
+wsl --install
+```
+Reinicie o computador, se solicitado e verifique a versão ativa com:
+```cmd
+wsl --list --verbose
 ```
 
-Thereafter, all services can be initialized from the command-line by running the
-[services](https://github.com/FIWARE/tutorials.Historic-Context-Flume/blob/NGSI-v2/services) Bash script provided within
-the repository:
 
-```console
-./services <command>
-```
-
-Where `<command>` will vary depending upon the databases we wish to activate. This command will also import seed data
-from the previous tutorials and provision the dummy IoT sensors on startup.
-
-> [!NOTE]
->
-> If you want to clean up and start over again you can do so with the following command:
->
-> ```console
-> ./services stop
-> ```
 # OrionCB/MongoDB - Gerenciamento de dados de contexto
 
 # Iot Agente LoraWAN - Intermediário entre Iot e Context Broker
