@@ -41,36 +41,58 @@ Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo LoR
 
 </details>
 
-# Contextualização
+# 📌 Contextualização
 
-O ecossistema FIWARE (Cirillo et al., 2019), desenvolvido pela Comissão Europeia, tem com principal objetivo utilizar dados para otimizar a eficiência e a gestão de serviços em diversas áreas. A plataforma possui padrões de coleta, armazenamento e publicação de dados, tendo como exemplo os “Dados de contexto” que representam o estado atual de entidades como sensores, aplicações de tempo real e outros.
+O ecossistema **FIWARE** (Cirillo et al., 2019), desenvolvido pela Comissão Europeia, tem como principal objetivo utilizar dados para otimizar a eficiência e a gestão de serviços em diversas áreas. A plataforma adota padrões abertos para coleta, armazenamento e publicação de dados, destacando-se o conceito de **dados de contexto**, que representam o estado atual de entidades como sensores, aplicações em tempo real e outros dispositivos.
 
-![FIWARE Monitor](https://camo.githubusercontent.com/20338462f869e22f514eb10d83325e840c9d68396b336be8e6680d8e453eacda/68747470733a2f2f6669776172652e6769746875622e696f2f636174616c6f6775652f696d672f636174616c6f6775652e706e67)
+<p align="center">
+  <img src="https://camo.githubusercontent.com/20338462f869e22f514eb10d83325e840c9d68396b336be8e6680d8e453eacda/68747470733a2f2f6669776172652e6769746875622e696f2f636174616c6f6775652f696d672f636174616c6f6775652e706e67" alt="FIWARE Monitor" width="600">
+</p>
 
+---
 
-# Arquitetura do projeto
+# 🏗️ Arquitetura do Projeto
 
-Dentre o vasto catálogo das ferramentas do Fiware, a classificação ocorre de acordo com 5 principais categorias: ferramentas de Deployment, gerenciamento de contexto, processamento, análise e monitoramento de Contexto, Interface para IoT e Robótica. Para o seguinte projeto utilizamos: 
-- 2 Gerenciadores de Dados de Contexto
-- 1 Agente Iot
-- 2 Bancos de Dados
-- 1 Plataforma de Visualização de dados
+Dentro do vasto catálogo de ferramentas do FIWARE, os componentes são organizados em cinco categorias principais:
 
-Os seguintes componentes são:
+- ⚙️ Deployment  
+- 🧠 Gerenciamento de Contexto  
+- 🧮 Processamento  
+- 📊 Análise e Monitoramento de Contexto  
+- 🌐 Interface para IoT e Robótica
 
--   Dois **FIWARE Context Managers**:
-    -   FIWARE [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) que recebe requisições usando a interface de API [NGSI-v2](https://fiware.github.io/specifications/OpenAPI/ngsiv2)
-    -   FIWARE [Cygnus](https://fiware-cygnus.readthedocs.io/en/latest/) que se inscreve nas alterações e persiste os dados para um Banco de Dados (**MySQL** , **PostgreSQL** or **MongoDB**)
--   Necessariamente 2  **Banco de Dados**:
-    -   O Banco de Dados NoSQL [MongoDB](https://www.mongodb.com/):
-        -   Utilizado pelo **Orion Context Broker** para armazenar dados de entidades, inscrições
-            e registros
-        -   Usado pelo **IoT Agent** para armazenar informações dos dispostivos como chaves, registros e outros
-    -   O Banco de dados [PostgreSQL](https://www.postgresql.org/):
-        -   Usado para armazenar os dados de contexto persistidos como um Data Sink..
-    
--   Visualização de dados:
-    - Grafana: ferramenta de visualização de gráficos, painéis e indicadores baseados nos dados coletados pela estação de monitoramento.
+Para este projeto, foram utilizados os seguintes componentes:
+
+---
+
+## 🧠 Gerenciadores de Contexto (2)
+
+- [**Orion Context Broker**](https://fiware-orion.readthedocs.io/en/latest/):  
+  Responsável por receber e gerenciar dados de contexto por meio da API [NGSI-v2](https://fiware.github.io/specifications/OpenAPI/ngsiv2).
+
+- [**Cygnus**](https://fiware-cygnus.readthedocs.io/en/latest/):  
+  Atua como conector para persistência dos dados, inscrevendo-se nas alterações de contexto e armazenando os dados em um banco relacional ou NoSQL (MySQL, PostgreSQL ou MongoDB).
+
+---
+
+## 🗃️ Bancos de Dados (2)
+
+- [**MongoDB**](https://www.mongodb.com/):  
+  - Usado pelo **Orion Context Broker** para armazenar entidades, inscrições e registros.  
+  - Também utilizado pelo **IoT Agent** para guardar informações de dispositivos, como chaves, identificadores e configurações.
+
+- [**PostgreSQL**](https://www.postgresql.org/):  
+  - Funciona como destino (**data sink**) para os dados persistidos pelo **Cygnus**.
+
+---
+
+## 📈 Plataforma de Visualização
+
+- [**Grafana**](https://grafana.com/):  
+  Ferramenta de visualização de dados que se conecta ao banco **PostgreSQL** para exibir gráficos, painéis e indicadores com base nas informações coletadas pela estação de monitoramento da qualidade do ar.
+
+---
+
 
 # Prerequisitos
 
