@@ -1,7 +1,9 @@
 <h1 align="center">
   <img src="https://www.fiware.org/custom/brand-guide/img/logo/fiware/secondary/png/logo-fiware-secondary.png" width="200" style="margin-right: 60px;"/>
-  <img src="https://iot-shop.de/aot_website_iot-shop/static/src/img/lorawan-landingpage/LoRaWAN_Logo.png" alt="LoRaWAN Logo" width="300"/>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/LoRaWAN_Logo.svg/2560px-LoRaWAN_Logo.svg.png" alt="LoRaWAN Logo" width="300"/>
+  <img src="https://www.thethingsindustries.com/docs/img/TTS-logo.svg" alt="The Things Stack Logo" width="300" style="margin-left: 50px; vertical-align: super;"/>
 </h1>
+
 
 ## Integração entre dispostivos LoraWAN e Plataforma aberta Fiware
 
