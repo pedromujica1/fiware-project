@@ -72,7 +72,7 @@ Para este projeto, foram utilizados os seguintes componentes:
 
 ---
 
-## 🤖 Agente IoT
+## 🤖 Agente IoT teste
 
 - [**IoT Agent LoRaWAN**](https://fiware-lorawan.readthedocs.io/en/latest/):  
   Responsável por integrar dispositivos LoRaWAN ao ecossistema FIWARE. Ele atua como intermediário entre a plataforma **The Things Stack (TTS)** e o **Orion Context Broker**, convertendo os dados recebidos em formato compatível com NGSI para posterior processamento e armazenamento.
