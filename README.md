@@ -8,7 +8,7 @@
 
 <!-- Descrição -->
 
-Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo [LoRaWAN](https://lora-alliance.org/) com os componentes da plataforma FIWARE, voltada para Cidades Inteligentes. A solução proposta inclui a conexão com a plataforma de [The Things Network (TTN)](https://www.thethingsindustries.com/stack/) para recebimento dos dados e a execução dos serviços em contêineres, permitindo sua implantação em ambientes de nuvem. Como exemplo, utilizamos uma estação de monitoramento da qualidade do ar equipada com sensores de baixo custo e demonstramos como o Fiware pode ser aplicado para armazenar, processar e visualizar os dados coletados por essa estação.
+Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo [LoRaWAN](https://lora-alliance.org/) com os componentes da plataforma FIWARE, voltada para Cidades Inteligentes. A solução proposta inclui a conexão com a plataforma [The Things Network (TTN)](https://www.thethingsindustries.com/stack/) para recebimento dos dados e a execução dos serviços Fiware em contêineres, permitindo sua implantação em ambientes de nuvem. Como exemplo, utilizamos uma estação de monitoramento da qualidade do ar equipada com sensores de baixo custo e demonstramos como o Fiware pode ser aplicado para armazenar, processar e visualizar os dados coletados por essa estação.
 
 -   Acess in English: [ReadmeEN.md](EN-README.md)
 
@@ -24,11 +24,8 @@ Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo [Lo
     -   [WSL](#wsl)
     -   [Conta e dispostivo registrado na TTN](#ttn-conta)
 -   [Iniciando o projeto](#start-up)
--   [OrionCB/MongoDB - Gerenciamento de dados de contexto](#orion-mongoDB)
--   [Iot Agent LoraWAN - Intermediário entre IoT e Context Broker](#iotAgent-lorawan)
 -   [Requisitos para Conexão entre Iot Agent e Orion CB - Versão The Things Stack](#requisitos-dispotivo-ttn)   
 -   [PostgreSQL - Pesistindo Contexto para o Banco de dados](#postgresql---persistindo-contexto-banco-dados)
-    -   [PostgreSQL - Configuração do Banco de dados](#postgresql---config-banco-dados)
     -   [PostgreSQL - COnfiguração do Cygnus](#postgresql---configuracao-cygnus)
     -   [PostgreSQL - Iniciando](#postgresql---iniciando)
         -   [Verificando status Cygnus](#checking-the-cygnus-service-health-1)
@@ -101,7 +98,7 @@ Para este projeto, foram utilizados os seguintes componentes:
 
 ## 🗺️ Diagrama da Arquitetura
 
-![Diagrama da Arquitetura](/fiware-project/docs/img/Diagrama_ic.png)
+![Diagrama da Arquitetura](/docs/img/Diagrama_ic.png)
 
 ---
 
@@ -149,6 +146,21 @@ wsl --list --verbose
 
 ---
 
+## 🌐 Conta e Dispositivo Registrado na TTN ou ChirpStack
+
+> **Atenção:** Este tutorial assume que sua solução IoT já está registrada em uma rede LoRaWAN compatível.
+
+Recomenda-se utilizar a plataforma [**The Things Stack** (TTN)](https://www.thethingsindustries.com/stack/), onde sua **Application** e seu **End Device** devem estar devidamente cadastrados em sua conta pessoal.
+
+Caso ainda não possua uma conta na TTN, este tutorial também é compatível com a plataforma [**ChirpStack**](https://www.chirpstack.io/), uma alternativa open source para redes LoRaWAN privadas.
+
+Ambas as plataformas permitem o uso dos seguintes **modelos de codificação de payload**, suportados pelo IoT Agent LoRaWAN:
+
+- **[CayenneLPP (Low Power Payload)](https://developers.mydevices.com/cayenne/docs/lora/#lora-cayenne-low-power-payload)** – Formato padrão para sensores com suporte a diversos tipos de dados (temperatura, umidade, GPS, etc.), fácil de usar e interpretar.
+- **[CBOR (Concise Binary Object Representation)](https://cbor.io/)** – Formato binário mais compacto e flexível, ideal para dispositivos com restrições de largura de banda e energia.
+
+---
+
 # 🧱 Iniciando o Projeto
 
 Clone o repositório e gere as imagens necessárias localmente:
@@ -190,12 +202,17 @@ Para inscrever o seu dispostivo TTN e conectar com o Orion Context Broker são n
 
 ![](/fiware-project/docs/img/app_data.png)
 
+## Informações Aplicação e dispositivo
+
+
 ## Configuração MQTT
 
 Caminho: Applications --> (nome_aplicação) --> MQTT
 Será necessário o Host, Username e Password
 
 ![Diagrama da Arquitetura](/fiware-project/docs/img/mqtt_connection.png)
+
+
 
 ---
 
