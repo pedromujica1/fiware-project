@@ -177,26 +177,28 @@ ba0055dcf278   fiware/orion:3.3.1          "/usr/bin/contextBro…"   3 weeks ag
 d0fc0101c533   mongo:4.4                   "docker-entrypoint.s…"   3 weeks ago   Up 6 hours               0.0.0.0:27017->27017/tcp, [::]:27017->27017/tcp                                                      docker-mongodb-1
 ```
 
-Caso deseje verificar e modificar o arquivo principal. A configuração de cada Contâiner pode ser encontrada neste arquivo [aqui](/fiware-project/docker/docker-compose.yml)
-
-# OrionCB/MongoDB - Gerenciamento de dados de contexto
-
-# Iot Agente LoraWAN - Intermediário entre Iot e Context Broker
+Caso deseje verificar e modificar o arquivo principal. A configuração de cada Contâiner pode ser encontrada neste arquivo [aqui](https://github.com/pedromujica1/GUIA_MONITORAMENTO_DADOS_FIWARE-LORAWAN/docker/docker-compose.yml)
 
 # Requisitos para a conexão entre o Iot Agente e OrionCB - The Things Stack
 
-# PostgreSQL - Persisting Context Data into a Database
+Para inscrever o seu dispostivo TTN e conectar com o Orion Context Broker são necessários os seguintes
+- device_id
+- app_eui:
+- dev_eu
+- "application_id" (nomeapplicação@ttn)
+- "application_key": "E078A5F764CFA112E6BA26496CA19A5B",
 
-To persist historic context data into an alternative database such as **PostgreSQL**, we will need an additional
-container which hosts the PostgreSQL server - the default Docker image for this data can be used. The PostgreSQL
-instance is listening on the standard `5432` port and the overall architecture can be seen below:
+![](/fiware-project/docs/img/app_data.png)
 
-![](https://fiware.github.io/tutorials.Historic-Context-Flume/img/cygnus-postgres.png)
+## Configuração MQTT
 
-We now have a system with two databases, since the MongoDB container is still required to hold data related to the Orion
-Context Broker and the IoT Agent.
+Caminho: Applications --> (nome_aplicação) --> MQTT
+Será necessário o Host, Username e Password
 
-## PostgreSQL - Database Server Configuration
+![Diagrama da Arquitetura](/fiware-project/docs/img/mqtt_connection.png)
+
+---
+
 
 ```yaml
 postgres-db:
@@ -214,19 +216,6 @@ postgres-db:
         - 'POSTGRES_USER=postgres'
         - 'POSTGRES_DB=postgres'
 ```
-
-The `postgres-db` container is listening on a single port:
-
--   Port `5432` is the default port for a PostgreSQL server. It has been exposed so you can also run the `pgAdmin4` tool
-    to display database data if you wish
-
-The `postgres-db` container is driven by environment variables as shown:
-
-| Key               | Value.     | Description                               |
-| ----------------- | ---------- | ----------------------------------------- |
-| POSTGRES_PASSWORD | `password` | Password for the PostgreSQL database user |
-| POSTGRES_USER     | `postgres` | Username for the PostgreSQL database user |
-| POSTGRES_DB       | `postgres` | The name of the PostgreSQL database       |
 
 > [!NOTE]
 >
@@ -261,73 +250,6 @@ cygnus:
         - 'CYGNUS_API_PORT=5080'
         - 'CYGNUS_SERVICE_PORT=5055'
 ```
-
-The `cygnus` container is listening on two ports:
-
--   The Subscription Port for Cygnus - `5055` is where the service will be listening for notifications from the Orion
-    context broker
--   The Management Port for Cygnus - `5080` is exposed purely for tutorial access - so that cUrl or Postman can make
-    provisioning commands without being part of the same network.
-
-The `cygnus` container is driven by environment variables as shown:
-
-| Key                            | Value         | Description                                                                    |
-| ------------------------------ | ------------- | ------------------------------------------------------------------------------ |
-| CYGNUS_POSTGRESQL_HOST         | `postgres-db` | Hostname of the PostgreSQL server used to persist historical context data      |
-| CYGNUS_POSTGRESQL_PORT         | `5432`        | Port that the PostgreSQL server uses to listen to commands                     |
-| CYGNUS_POSTGRESQL_USER         | `postgres`    | Username for the PostgreSQL database user                                      |
-| CYGNUS_POSTGRESQL_PASS         | `password`    | Password for the PostgreSQL database user                                      |
-| CYGNUS_LOG_LEVEL               | `DEBUG`       | The logging level for Cygnus                                                   |
-| CYGNUS_SERVICE_PORT            | `5050`        | Notification Port that Cygnus listens when subscribing to context data changes |
-| CYGNUS_API_PORT                | `5080`        | Port that Cygnus listens on for operational reasons                            |
-| CYGNUS_POSTGRESQL_ENABLE_CACHE | `true`        | Switch to enable caching within the PostgreSQL configuration                   |
-
-> [!NOTE]
->
-> Passing the Username and Password in plain text environment variables like this is a security risk. Whereas this is
-> acceptable practice in a tutorial, for a production environment, `CYGNUS_POSTGRESQL_USER` and `CYGNUS_POSTGRESQL_PASS`
-> should be injected using [Docker Secrets](https://blog.docker.com/2017/02/docker-secrets-management/)
-
-## PostgreSQL - Start up
-
-To start the system with a **PostgreSQL** database run the following command:
-
-```console
-./services postgres
-```
-
-### Checking the Cygnus Service Health
-
-Once Cygnus is running, you can check the status by making an HTTP request to the exposed `CYGNUS_API_PORT` port. If the
-response is blank, this is usually because Cygnus is not running or is listening on another port.
-
-#### 4️⃣ Request:
-
-```console
-curl -X GET \
-  'http://localhost:5080/v1/version'
-```
-
-#### Response:
-
-The response will look similar to the following:
-
-```json
-{
-    "success": "true",
-    "version": "1.18.0_SNAPSHOT.etc"
-}
-```
-
-> **Troubleshooting:** What if the response is blank ?
->
-> -   To check that a docker container is running try
->
-> ```bash
-> docker ps
-> ```
->
-> You should see several containers running. If `cygnus` is not running, you can restart the containers as necessary.
 
 ### Subscribing to Context Changes
 
@@ -380,10 +302,6 @@ prompt:
 docker run -it --rm  --network fiware_default jbergknoff/postgresql-client \
    postgresql://postgres:password@postgres-db:5432/postgres
 ```
-
-### Show Available Databases on the PostgreSQL server
-
-To show the list of available databases, run the statement as shown:
 
 #### Query:
 
