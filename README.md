@@ -194,6 +194,7 @@ Caso deseje verificar e modificar o arquivo principal. A configuração de cada 
 # Requisitos para a conexão entre o Iot Agente e OrionCB - The Things Stack
 
 Para inscrever o seu dispostivo TTN e conectar com o Orion Context Broker são necessários os seguintes
+
 - device_id
 - app_eui:
 - dev_eu
