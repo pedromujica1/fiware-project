@@ -19,11 +19,11 @@ Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo [Lo
 
 -   [Contextualização](#introducao-fiware)
 -   [Arquitetura](#arquitetura)
--   [Prerequisitos](#prerequisitos)
+-   [Pré-requisitos](#prerequisitos)
     -   [Docker and Docker Compose](#docker-and-docker-compose)
     -   [WSL](#wsl)
     -   [Conta e dispostivo registrado na TTN](#ttn-conta)
--   [Iniciando](#start-up)
+-   [Iniciando o projeto](#start-up)
 -   [OrionCB/MongoDB - Gerenciamento de dados de contexto](#orion-mongoDB)
 -   [Iot Agent LoraWAN - Intermediário entre IoT e Context Broker](#iotAgent-lorawan)
 -   [Requisitos para Conexão entre Iot Agent e Orion CB - Versão The Things Stack](#requisitos-dispotivo-ttn)   
@@ -97,6 +97,11 @@ Para este projeto, foram utilizados os seguintes componentes:
 
 - [**Grafana**](https://grafana.com/):  
   Ferramenta de visualização de dados que se conecta ao banco **PostgreSQL** para exibir gráficos, painéis e indicadores com base nas informações coletadas pela estação de monitoramento da qualidade do ar.
+---
+
+## 🗺️ Diagrama da Arquitetura
+
+![Diagrama da Arquitetura](/fiware-project/docs/img/Diagrama_ic.png)
 
 ---
 
@@ -115,7 +120,7 @@ Todos os componentes deste projeto serão executados com contâiners [Docker](ht
 ### 📦 Docker Compose
 
 [Docker Compose](https://docs.docker.com/compose/) permite definir e executar múltiplos contêineres com um único comando via arquivos `docker-compose.yml`.  
-> ⚠️ Já vem instalado no Docker Desktop (Windows/macOS). No Linux, siga [estas instruções](https://docs.docker.com/compose/install/).
+- ⚠️ Já vem instalado no Docker Desktop (Windows/macOS). No Linux, siga [estas instruções](https://docs.docker.com/compose/install/).
 
 ### ✅ Verificação de versões
 
@@ -142,6 +147,37 @@ Reinicie o computador, se solicitado e verifique a versão ativa com:
 wsl --list --verbose
 ```
 
+---
+
+# 🧱 Iniciando o Projeto
+
+Clone o repositório e gere as imagens necessárias localmente:
+
+```bash
+git clone https://github.com/pedromujica1/GUIA_MONITORAMENTO_DADOS_FIWARE-LORAWAN.git
+cd GUIA_MONITORAMENTO_DADOS_FIWARE-LORAWAN
+```
+
+Inicie os Contêineres:
+```bash
+docker-compose -f docker/docker-compose.yml up -d
+```
+Verifique se estão inicializados:
+```bash
+docker ps
+```
+O resultado do comando deve ser algo similar ao abaixo:
+```
+CONTAINER ID   IMAGE                       COMMAND                  CREATED       STATUS                   PORTS                                                                                                NAMES
+80850d97c6d7   fiware/cygnus-ngsi:latest   "/cygnus-entrypoint.…"   3 weeks ago   Up 6 hours               0.0.0.0:5055->5055/tcp, [::]:5055->5055/tcp, 5050/tcp, 0.0.0.0:5080->5080/tcp, [::]:5080->5080/tcp   fiware-cygnus
+6061d69a1445   ioeari/iotagent-lora        "bin/iotagent-lora d…"   3 weeks ago   Up 6 hours               0.0.0.0:4041->4041/tcp, [::]:4041->4041/tcp                                                          docker-iotagent-lora-1
+e4c1d735ac1c   grafana/grafana             "/run.sh"                3 weeks ago   Up 6 hours               0.0.0.0:3003->3000/tcp, [::]:3003->3000/tcp                                                          docker-grafana-1
+ba0055dcf278   fiware/orion:3.3.1          "/usr/bin/contextBro…"   3 weeks ago   Up 6 hours (unhealthy)   0.0.0.0:1026->1026/tcp, [::]:1026->1026/tcp                                                          docker-orion-1
+5eed5bf34ca2   postgres:latest             "docker-entrypoint.s…"   3 weeks ago   Up 6 hours               0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp                                                          db-postgres
+d0fc0101c533   mongo:4.4                   "docker-entrypoint.s…"   3 weeks ago   Up 6 hours               0.0.0.0:27017->27017/tcp, [::]:27017->27017/tcp                                                      docker-mongodb-1
+```
+
+Caso deseje verificar e modificar o arquivo principal. A configuração de cada Contâiner pode ser encontrada neste arquivo [aqui](/fiware-project/docker/docker-compose.yml)
 
 # OrionCB/MongoDB - Gerenciamento de dados de contexto
 
