@@ -43,7 +43,13 @@ Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo [Lo
       - [5️⃣ Requisição:](#5️⃣-requisição)
   - [PostgreSQL - Leitura de Dados do Banco](#postgresql---leitura-de-dados-do-banco)
 - [Grafana - Visualização de dados persistidos](#grafana---visualização-de-dados-persistidos)
-- [Considerações](#considerações)
+- [Grafana - Visualização de dados persistidos](#grafana---visualização-de-dados-persistidos-1)
+  - [Acessando o Grafana via Docker](#acessando-o-grafana-via-docker)
+  - [Adicionando uma Fonte de Dados PostgreSQL](#adicionando-uma-fonte-de-dados-postgresql)
+    - [Connection](#connection)
+    - [Authentication](#authentication)
+  - [Criando um Dashboard com Consulta SQL](#criando-um-dashboard-com-consulta-sql)
+  - [Considerações Finais](#considerações-finais)
 - [Próximos passos](#próximos-passos)
   - [License](#license)
 
@@ -320,8 +326,6 @@ Parâmetros-chave:
 
   - throttling controla frequência de amostragem
 
-Resposta esperada: 201 (Created)
-
 #### 5️⃣ Requisição:
 
 ```console
@@ -363,11 +367,10 @@ Para ler os dados do PostgreSQL via linha de comando, é necessário ter acesso 
 ```bash
 docker exec -it db-postgres psql -U postgres -d postgres
 ```
-
+Para exibir os seguintes Banco de Dados, exiba o seguinte comando
 ```console
 \list
 ```
-
 Resultado:
 
 ```console
@@ -380,8 +383,6 @@ Resultado:
            |          |          |            |            | postgres=CTc/postgres
 (3 rows)
 ```
-
-O resultado inclui os bancos de dados padrão template0, template1, além do banco postgres criado quando o container foi iniciado.
 
 Para exibir a lista de schemas disponíveis, utilize:
 Consulta:
@@ -468,8 +469,90 @@ Para sair do cliente Postgres e retornar ao terminal, use:
 > uma prática aceitável em um tutorial, para um ambiente de produção, você pode evitar esse risco aplicando
 > [Docker Secrets](https://blog.docker.com/2017/02/docker-secrets-management/)
 
-# Considerações
+Claro! Aqui está um **tutorial em Markdown puro** (sem renderização) que explica como acessar o Grafana no Docker via `localhost:3003`, adicionar uma *data source* PostgreSQL, inserir as credenciais e criar um painel com um exemplo de consulta:
 
+
+# Grafana - Visualização de dados persistidos
+
+> [!IMPORTANTE]
+> Passar o nome de usuário e senha em variáveis de ambiente de texto simples como esta é um risco de segurança. Embora isso seja
+> uma prática aceitável em um tutorial, para um ambiente de produção, você pode evitar esse risco aplicando
+> [Docker Secrets](https://blog.docker.com/2017/02/docker-secrets-management/)
+
+---
+
+## Acessando o Grafana via Docker
+
+Se estiver executando o Grafana via Docker, o contêiner geralmente é configurado com a porta 3003 mapeada localmente. Acesse pelo navegador:
+
+```
+http://localhost:3003
+```
+
+As credenciais padrão são geralmente:
+
+- **Username:** `admin`
+- **Password:** `admin` (você pode ser solicitado a alterar no primeiro login)
+
+---
+
+## Adicionando uma Fonte de Dados PostgreSQL
+
+1. No menu lateral esquerdo do Grafana, clique em **"Configuration" (ícone de engrenagem) > Data Sources**.
+2. Clique em **"Add data source"**.
+3. Escolha **PostgreSQL**.
+4. Preencha os campos conforme abaixo:
+
+### Connection
+
+- **Host URL:** `postgres-db:5432`
+- **Database name:** `postgres`
+
+### Authentication
+
+- **Username:** `postgres`
+- **Password:** (senha configurada no seu `docker-compose.yml`)
+- **TLS/SSL Mode:** `disable`
+
+5. Clique em **Save & Test** para verificar se a conexão está funcionando.
+
+---
+
+## Criando um Dashboard com Consulta SQL
+
+1. No menu lateral, clique em **"Create" > "Dashboard"**.
+2. Clique em **"Add new panel"**.
+3. No editor de consultas, selecione a fonte de dados PostgreSQL criada.
+4. No modo SQL, insira a seguinte consulta:
+
+```sql
+SELECT
+    recvtime::timestamp AS "time",
+    NULLIF(attrvalue, 'null')::float AS "SO2"
+FROM
+    openiot.airquality_env2_loradevice
+WHERE
+    attrname = 'Best_SO2'
+ORDER BY
+    "time" ASC;
+```
+
+5. Clique em **Run query** para visualizar os dados.
+6. Configure o tipo de gráfico desejado (ex: linha, barras).
+7. Clique em **Apply** para salvar o painel no dashboard.
+
+---
+
+## Considerações Finais
+
+- Certifique-se de que o container do Grafana esteja na mesma **rede Docker** que o container do PostgreSQL (`fiware_default`, por exemplo).
+- Em caso de erros, verifique os logs dos containers com:
+
+```bash
+docker logs <nome-do-container>
+```
+
+- Para múltiplos sensores ou atributos, modifique o filtro `attrname` ou crie múltiplos painéis.
 
 # Próximos passos
 
