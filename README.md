@@ -17,23 +17,35 @@ Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo [Lo
 <details>
 <summary><strong>Tópicos</strong></summary>
 
--   [Contextualização](#introducao-fiware)
--   [Arquitetura](#arquitetura)
--   [Pré-requisitos](#prerequisitos)
-    -   [Docker and Docker Compose](#docker-and-docker-compose)
-    -   [WSL](#wsl)
-    -   [Conta e dispostivo registrado na TTN](#ttn-conta)
--   [Iniciando o projeto](#start-up)
--   [Requisitos para Conexão entre Iot Agent e Orion CB - Versão The Things Stack](#requisitos-dispotivo-ttn)   
--   [PostgreSQL - Pesistindo Contexto para o Banco de dados](#postgresql---persistindo-contexto-banco-dados)
-    -   [PostgreSQL - COnfiguração do Cygnus](#postgresql---configuracao-cygnus)
-    -   [PostgreSQL - Iniciando](#postgresql---iniciando)
-        -   [Verificando status Cygnus](#checking-the-cygnus-service-health-1)
-        -   [Incrição para mudanças de contexto](#context-mudancas-1)
-    -   [PostgreSQL - Lendo dados do Banco](#postgresql-lend-bancoDados)
-        -   [Banco de Dados disponíveis do PostgreSQL server](#show-available-databases-on-the-postgresql-server)
-        -   [Contexto Histórico do PostgreSQL server](#read-historical-context-from-the-postgresql-server)
--   [Grafana - Visualização de dados persistidos](#visualizacao-grafana) 
+- [📌 Contextualização](#-contextualização)
+- [🏗️ Arquitetura do Projeto](#️-arquitetura-do-projeto)
+  - [🧠 Gerenciadores de Contexto (2)](#-gerenciadores-de-contexto-2)
+  - [🤖 Agente IoT teste](#-agente-iot-teste)
+  - [🗃️ Bancos de Dados (2)](#️-bancos-de-dados-2)
+  - [📈 Plataforma de Visualização](#-plataforma-de-visualização)
+  - [Ferramenta de visualização de dados que se conecta ao banco **PostgreSQL** para exibir gráficos, painéis e indicadores com base nas informações coletadas pela estação de monitoramento da qualidade do ar.](#ferramenta-de-visualização-de-dados-que-se-conecta-ao-banco-postgresql-para-exibir-gráficos-painéis-e-indicadores-com-base-nas-informações-coletadas-pela-estação-de-monitoramento-da-qualidade-do-ar)
+  - [🗺️ Diagrama da Arquitetura](#️-diagrama-da-arquitetura)
+- [Pré-requisitos](#pré-requisitos)
+  - [🐳 Docker e Docker Compose](#-docker-e-docker-compose)
+    - [🔧 Instalação do Docker](#-instalação-do-docker)
+    - [📦 Docker Compose](#-docker-compose)
+    - [✅ Verificação de versões](#-verificação-de-versões)
+  - [💻 Requisito para Windows: WSL 2](#-requisito-para-windows-wsl-2)
+  - [🌐 Conta e Dispositivo Registrado na TTN ou ChirpStack](#-conta-e-dispositivo-registrado-na-ttn-ou-chirpstack)
+- [🧱 Iniciando o Projeto](#-iniciando-o-projeto)
+- [Requisitos para a conexão entre o IoT Agent e Orion Context Broker - The Things Stack](#requisitos-para-a-conexão-entre-o-iot-agent-e-orion-context-broker---the-things-stack)
+  - [📌 Localizando as Informações da Aplicação e do Dispositivo](#-localizando-as-informações-da-aplicação-e-do-dispositivo)
+  - [🔗 Configuração do MQTT](#-configuração-do-mqtt)
+  - [📤 Registro do Dispositivo no IoT Agent](#-registro-do-dispositivo-no-iot-agent)
+- [Configurando a persistência de dados - Cygnus/PostgresSQL](#configurando-a-persistência-de-dados---cygnuspostgressql)
+  - [PostgreSQL - Configuração do Cygnus](#postgresql---configuração-do-cygnus)
+    - [Inscrição em Mudanças de Contexto](#inscrição-em-mudanças-de-contexto)
+      - [5️⃣ Requisição:](#5️⃣-requisição)
+  - [PostgreSQL - Leitura de Dados do Banco](#postgresql---leitura-de-dados-do-banco)
+- [Grafana - Visualização de dados persistidos](#grafana---visualização-de-dados-persistidos)
+- [Considerações](#considerações)
+- [Próximos passos](#próximos-passos)
+  - [License](#license)
 
 
 </details>
@@ -191,97 +203,126 @@ d0fc0101c533   mongo:4.4                   "docker-entrypoint.s…"   3 weeks ag
 
 Caso deseje verificar e modificar o arquivo principal. A configuração de cada Contâiner pode ser encontrada neste arquivo [aqui](https://github.com/pedromujica1/GUIA_MONITORAMENTO_DADOS_FIWARE-LORAWAN/docker/docker-compose.yml)
 
-# Requisitos para a conexão entre o Iot Agente e OrionCB - The Things Stack
+# Requisitos para a conexão entre o IoT Agent e Orion Context Broker - The Things Stack
 
-Para inscrever o seu dispostivo TTN e conectar com o Orion Context Broker são necessários os seguintes
+Para inscrever seu dispositivo da TTN e conectá-lo ao **Orion Context Broker (OrionCB)** via IoT Agent LoRaWAN, você precisará das seguintes informações:
 
-- device_id
-- app_eui:
-- dev_eu
-- "application_id" (nomeapplicação@ttn)
-- "application_key": "E078A5F764CFA112E6BA26496CA19A5B",
+- `device_id`: Identificador único do dispositivo
+- `app_eui`: Identificador da aplicação no padrão EUI
+- `dev_eui`: Identificador único do dispositivo atribuído pela TTN
+- `application_id`: No formato `nome-da-aplicacao@ttn`
+- `application_key`: Chave de autenticação (API Key)
 
-![](/fiware-project/docs/img/app_data.png)
+> Essas informações são essenciais para o provisionamento correto do dispositivo no IoT Agent.
 
-## Informações Aplicação e dispositivo
+## 📌 Localizando as Informações da Aplicação e do Dispositivo
 
+Acesse o menu lateral em **Applications → (sua aplicação) → End devices**, e selecione o dispositivo cadastrado. Em seguida, na tela de visão geral do dispositivo, você encontrará:
 
-## Configuração MQTT
+- `End device ID` (equivale ao `device_id`)
+- `AppEUI` (Application EUI)
+- `DevEUI` (Device EUI)
 
-Caminho: Applications --> (nome_aplicação) --> MQTT
-Será necessário o Host, Username e Password
+Veja na imagem abaixo onde encontrar esses dados:
 
-![Diagrama da Arquitetura](/fiware-project/docs/img/mqtt_connection.png)
-
-
+![Informações do dispositivo e EUI](/docs/img/ttn-data1.png)
 
 ---
 
+## 🔗 Configuração do MQTT
 
-```yaml
-postgres-db:
-    image: postgres:latest
-    hostname: postgres-db
-    container_name: db-postgres
-    expose:
-        - '5432'
-    ports:
-        - '5432:5432'
-    networks:
-        - default
-    environment:
-        - 'POSTGRES_PASSWORD=password'
-        - 'POSTGRES_USER=postgres'
-        - 'POSTGRES_DB=postgres'
+Para conectar o IoT Agent à plataforma TTN vamos utilizar o protocolo [MQTT](https://mqtt.org/), frequentemente utilizado para transporte de dados entre dispositivos IoT:
+
+1. No menu lateral, acesse:  
+   **Applications → (sua aplicação) → MQTT**
+
+2. Copie as seguintes informações:
+   - `Public address` (exemplo: `au1.cloud.thethings.network:1883`) – este é o **host**
+   - `Username` (exemplo: `envcity@ttn`)
+   - `Password` – **API Key** que pode ser gerada no próprio painel
+
+Veja a tela de onde extrair essas informações:
+
+![Credenciais MQTT da TTN](/docs/img/ttn-data2.png)
+
+> ✅ Agora que você possui os dados da aplicação e do dispositivo, você está pronto para registrá-los no IoT Agent LoRaWAN e integrá-los ao Orion Context Broker.
+---
+
+## 📤 Registro do Dispositivo no IoT Agent
+
+Com as informações coletadas da TTN (como `device_id`, `app_eui`, `dev_eui`, `application_id`, `application_key`, `host`, `username` e `password`), você pode registrar seu dispositivo no IoT Agent por meio de uma requisição HTTP `POST` como a seguir:
+
+```bash
+#!/bin/sh
+
+curl --location --request POST 'http://localhost:4041/iot/devices' \
+--header 'fiware-service: openiot' \
+--header 'fiware-servicepath: /airQuality' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "devices": [
+    {
+      "device_id": "tbeam-v1",
+      "entity_name": "PaxCounter",
+      "entity_type": "LoraDevice",
+      "attributes": [
+        { "object_id": "field1", "name": "Field1", "type": "Number" },
+        { "object_id": "field2", "name": "Field2", "type": "Number" },
+        { "object_id": "field3", "name": "Field3", "type": "Number" }
+      ],
+      "internal_attributes": {
+        "lorawan": {
+          "application_server": {
+            "host": "<ENDEREÇO_MQTT>",           // Ex: au1.cloud.thethings.network:1883
+            "username": "<USUÁRIO_MQTT>",        // Ex: nome-aplicacao@ttn
+            "password": "<API_KEY_MQTT>",
+            "provider": "TTN"
+          },
+          "app_eui": "<APP_EUI>",
+          "dev_eui": "<DEV_EUI>",
+          "application_id": "<APPLICATION_ID>",   // Ex: nome-aplicacao@ttn
+          "application_key": "<APPLICATION_KEY>",
+          "data_model": "application_server"
+        }
+      }
+    }
+  ]
+}'
 ```
+---
 
-> [!NOTE]
->
-> Passing the Username and Password in plain text environment variables like this is a security risk. Whereas this is
-> acceptable practice in a tutorial, for a production environment, you can avoid this risk by applying
-> [Docker Secrets](https://blog.docker.com/2017/02/docker-secrets-management/)
+# Configurando a persistência de dados - Cygnus/PostgresSQL
 
-## PostgreSQL - Cygnus Configuration
+O Orion CB armazena apenas metadados no MongoDB. Para persistir os grandes volumes de dados dos sensores, usamos o conector Cygnus para enviar esses dados ao PostgreSQL (banco relacional).
 
-```yaml
-cygnus:
-    image: quay.io/fiware/cygnus-ngsi:latest
-    hostname: cygnus
-    container_name: fiware-cygnus
-    networks:
-        - default
-    depends_on:
-        - postgres-db
-    expose:
-        - '5080'
-    ports:
-        - '5055:5055'
-        - '5080:5080'
-    environment:
-        - 'CYGNUS_POSTGRESQL_HOST=postgres-db'
-        - 'CYGNUS_POSTGRESQL_PORT=5432'
-        - 'CYGNUS_POSTGRESQL_USER=postgres'
-        - 'CYGNUS_POSTGRESQL_PASS=password'
-        - 'CYGNUS_POSTGRESQL_ENABLE_CACHE=true'
-        - 'CYGNUS_POSTGRESQL_SERVICE_PORT=5055'
-        - 'CYGNUS_LOG_LEVEL=DEBUG'
-        - 'CYGNUS_API_PORT=5080'
-        - 'CYGNUS_SERVICE_PORT=5055'
-```
+Configuração básica:
 
-### Subscribing to Context Changes
+  - Enviar request de assinatura ao Orion CB para notificar o Cygnus sobre mudanças nas entidades
 
-Once a dynamic context system is up and running, we need to inform **Cygnus** of changes in context.
+  - O Cygnus então armazenará os dados nas tabelas do PostgreSQL
 
-This is done by making a POST request to the `/v2/subscription` endpoint of the Orion Context Broker.
 
--   The `fiware-service` and `fiware-servicepath` headers are used to filter the subscription to only listen to
-    measurements from the attached IoT Sensors, since they had been provisioned using these settings
--   The `idPattern` in the request body ensures that Cygnus will be informed of all context data changes.
--   The notification `url` must match the configured `CYGNUS_POSTGRESQL_SERVICE_PORT`
--   The `throttling` value defines the rate that changes are sampled.
+## PostgreSQL - Configuração do Cygnus
 
-#### 5️⃣ Request:
+### Inscrição em Mudanças de Contexto
+
+Para notificar o Cygnus sobre mudanças no contexto:
+
+Enviar requisição POST para /v2/subscription no Orion CB
+
+Parâmetros-chave:
+
+  - fiware-service e fiware-servicepath filtram por dispositivo IoT. **Atenção**: O caminho definido deve ser o mesmo configurado na requisição anterior.
+
+  - idPattern: ".*" monitora todas entidades
+
+  - URL aponta para CYGNUS_POSTGRESQL_SERVICE_PORT
+
+  - throttling controla frequência de amostragem
+
+Resposta esperada: 201 (Created)
+
+#### 5️⃣ Requisição:
 
 ```console
 curl -iX POST \
@@ -306,30 +347,30 @@ curl -iX POST \
   "throttling": 5
 }'
 ```
+Para verificar a inscrição, realize a seguinte requisição:
 
-As you can see, the database used to persist context data has no impact on the details of the subscription. It is the
-same for each database. The response will be **201 - Created**
+```bash
+curl -X GET \
+  'http://localhost:1026/v2/subscriptions/' \
+  -H 'fiware-service: openiot' \
+  -H 'fiware-servicepath: /airQuality'
+```
 
-## PostgreSQL - Reading Data from a database
+## PostgreSQL - Leitura de Dados do Banco
 
-To read PostgreSQL data from the command-line, we will need access to the `postgres` client, to do this, run an
-interactive instance of the `postgresql-client` image supplying the connection string as shown to obtain a command-line
-prompt:
+Para ler os dados do PostgreSQL via linha de comando, é necessário ter acesso ao cliente `postgres`. Para isso, execute uma instância interativa da imagem `postgresql-client`, fornecendo a string de conexão como mostrado abaixo para obter um prompt:
+
+```bash
+docker exec -it db-postgres psql -U postgres -d postgres
+```
 
 ```console
-docker run -it --rm  --network fiware_default jbergknoff/postgresql-client \
-   postgresql://postgres:password@postgres-db:5432/postgres
-```
-
-#### Query:
-
-```
 \list
 ```
 
-#### Result:
+Resultado:
 
-```
+```console
    Name    |  Owner   | Encoding |  Collate   |   Ctype    |   Access privileges
 -----------+----------+----------+------------+------------+-----------------------
  postgres  | postgres | UTF8     | en_US.utf8 | en_US.utf8 |
@@ -340,20 +381,16 @@ docker run -it --rm  --network fiware_default jbergknoff/postgresql-client \
 (3 rows)
 ```
 
-The result includes two template databases `template0` and `template1` as well as the `postgres` database setup when the
-docker container was started.
+O resultado inclui os bancos de dados padrão template0, template1, além do banco postgres criado quando o container foi iniciado.
 
-To show the list of available schemas, run the statement as shown:
-
-#### Query:
-
-```
+Para exibir a lista de schemas disponíveis, utilize:
+Consulta:
+```console
 \dn
 ```
 
-#### Result:
-
-```
+Resultado:
+```console
   List of schemas
   Name   |  Owner
 ---------+----------
@@ -362,26 +399,20 @@ To show the list of available schemas, run the statement as shown:
 (2 rows)
 ```
 
-As a result of the subscription of Cygnus to Orion Context Broker, a new schema has been created called `openiot`. The
-name of the schema matches the `fiware-service` header - therefore `openiot` holds the historic context of the IoT
-devices.
+Como resultado da subscrição do Cygnus ao Orion Context Broker, foi criado um novo schema chamado openiot. O nome do schema corresponde ao cabeçalho fiware-service — portanto, openiot armazena o histórico do contexto dos dispositivos IoT.
+Leitura de Contexto Histórico no PostgreSQL
 
-### Read Historical Context from the PostgreSQL server
-
-Once running a docker container within the network, it is possible to obtain information about the running database.
-
-#### Query:
-
+Após rodar o container docker dentro da rede, é possível consultar as informações do banco de dados em execução.
+Consulta:
 ```sql
-SELECT table_schema,table_name
+SELECT table_schema, table_name
 FROM information_schema.tables
-WHERE table_schema ='openiot'
-ORDER BY table_schema,table_name;
+WHERE table_schema = 'openiot'
+ORDER BY table_schema, table_name;
 ```
 
-#### Result:
-
-```
+Resultado:
+```console
  table_schema |    table_name
 --------------+-------------------
  openiot      | door_001_door
@@ -390,69 +421,52 @@ ORDER BY table_schema,table_name;
 (3 rows)
 ```
 
-The `table_schema` matches the `fiware-service` header supplied with the context data:
+O campo table_schema corresponde ao cabeçalho fiware-service fornecido com os dados de contexto.
 
-To read the data within a table, run a select statement as shown:
-
-#### Query:
-
+Para consultar os dados de uma tabela, execute:
+Consulta:
 ```sql
-SELECT * FROM openiot.motion_001_motion limit 10;
+SELECT * FROM openiot.motion_001_motion LIMIT 10;
 ```
-
-#### Result:
-
-```
+Resultado (exemplo):
+```console
   recvtimets   |         recvtime         | fiwareservicepath |  entityid  | entitytype |  attrname   |   attrtype   |        attrvalue         |                                    attrmd
 ---------------+--------------------------+-------------------+------------+------------+-------------+--------------+--------------------------+------------------------------------------------------------------------------
  1528803005491 | 2018-06-12T11:30:05.491Z | /                 | Motion:001 | Motion     | TimeInstant | ISO8601      | 2018-06-12T11:30:05.423Z | []
  1528803005491 | 2018-06-12T11:30:05.491Z | /                 | Motion:001 | Motion     | count       | Integer      | 7                        | [{"name":"TimeInstant","type":"ISO8601","value":"2018-06-12T11:30:05.423Z"}]
- 1528803005491 | 2018-06-12T11:30:05.491Z | /                 | Motion:001 | Motion     | refStore    | Relationship | Store:001                | [{"name":"TimeInstant","type":"ISO8601","value":"2018-06-12T11:30:05.423Z"}]
- 1528803035501 | 2018-06-12T11:30:35.501Z | /                 | Motion:001 | Motion     | TimeInstant | ISO8601      | 2018-06-12T11:30:35.480Z | []
- 1528803035501 | 2018-06-12T11:30:35.501Z | /                 | Motion:001 | Motion     | count       | Integer      | 10                       | [{"name":"TimeInstant","type":"ISO8601","value":"2018-06-12T11:30:35.480Z"}]
- 1528803035501 | 2018-06-12T11:30:35.501Z | /                 | Motion:001 | Motion     | refStore    | Relationship | Store:001                | [{"name":"TimeInstant","type":"ISO8601","value":"2018-06-12T11:30:35.480Z"}]
- 1528803041563 | 2018-06-12T11:30:41.563Z | /                 | Motion:001 | Motion     | TimeInstant | ISO8601      | 2018-06-12T11:30:41.520Z | []
- 1528803041563 | 2018-06-12T11:30:41.563Z | /                 | Motion:001 | Motion     | count       | Integer      | 12                       | [{"name":"TimeInstant","type":"ISO8601","value":"2018-06-12T11:30:41.520Z"}]
- 1528803041563 | 2018-06-12T11:30:41.563Z | /                 | Motion:001 | Motion     | refStore    | Relationship | Store:001                | [{"name":"TimeInstant","type":"ISO8601","value":"2018-06-12T11:30:41.520Z"}]
- 1528803047545 | 2018-06-12T11:30:47.545Z | /
+...
 ```
 
-The usual **PostgreSQL** query syntax can be used to filter appropriate fields and values. For example to read the rate
-at which the **Motion Sensor** with the `id=Motion:001_Motion` is accumulating, you would make a query as follows:
-
-#### Query:
+A sintaxe padrão do PostgreSQL pode ser usada para filtrar os campos e valores desejados. Por exemplo, para consultar a taxa de contagem do sensor de movimento com id = Motion:001_Motion, use:
+Consulta:
 
 ```sql
-SELECT recvtime, attrvalue FROM openiot.motion_001_motion WHERE attrname ='count'  limit 10;
+SELECT recvtime, attrvalue FROM openiot.motion_001_motion WHERE attrname = 'count' LIMIT 10;
 ```
 
-#### Result:
-
-```
+Resultado:
+```console
          recvtime         | attrvalue
 --------------------------+-----------
  2018-06-12T11:30:05.491Z | 7
  2018-06-12T11:30:35.501Z | 10
  2018-06-12T11:30:41.563Z | 12
- 2018-06-12T11:30:47.545Z | 13
- 2018-06-12T11:31:02.617Z | 15
- 2018-06-12T11:31:32.718Z | 20
- 2018-06-12T11:31:38.733Z | 22
- 2018-06-12T11:31:50.780Z | 24
- 2018-06-12T11:31:56.825Z | 25
- 2018-06-12T11:31:59.790Z | 26
-(10 rows)
+ ...
 ```
 
-To leave the Postgres client and leave interactive mode, run the following:
-
-```console
+Para sair do cliente Postgres e retornar ao terminal, use:
+```sql
 \q
 ```
 
-You will then return to the command-line.
 
 # Grafana - Visualização de dados persistidos
+
+> [!NOTE]
+> 
+> Passar o nome de usuário e senha em variáveis de ambiente de texto simples como esta é um risco de segurança. Embora isso seja
+> uma prática aceitável em um tutorial, para um ambiente de produção, você pode evitar esse risco aplicando
+> [Docker Secrets](https://blog.docker.com/2017/02/docker-secrets-management/)
 
 # Considerações
 
