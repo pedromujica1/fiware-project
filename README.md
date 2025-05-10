@@ -34,9 +34,12 @@ Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo [Lo
   - [🌐 Conta e Dispositivo Registrado na TTN ou ChirpStack](#-conta-e-dispositivo-registrado-na-ttn-ou-chirpstack)
 - [🧱 Iniciando o Projeto](#-iniciando-o-projeto)
 - [Requisitos para a conexão entre o IoT Agent e Orion Context Broker - The Things Stack](#requisitos-para-a-conexão-entre-o-iot-agent-e-orion-context-broker---the-things-stack)
-  - [📌 Localizando as Informações da Aplicação e do Dispositivo](#-localizando-as-informações-da-aplicação-e-do-dispositivo)
+  - [🔧 Configuraando informações](#-configuraando-informações)
+  - [⚠️ Segurança](#️-segurança)
+  - [📌 Localizando informações da Aplicação e do Dispositivo](#-localizando-informações-da-aplicação-e-do-dispositivo)
   - [🔗 Configuração do MQTT](#-configuração-do-mqtt)
   - [📤 Registro do Dispositivo no IoT Agent](#-registro-do-dispositivo-no-iot-agent)
+  - [🚀 Execução](#-execução)
 - [Configurando a persistência de dados - Cygnus/PostgresSQL](#configurando-a-persistência-de-dados---cygnuspostgressql)
   - [PostgreSQL - Configuração do Cygnus](#postgresql---configuração-do-cygnus)
     - [Inscrição em Mudanças de Contexto](#inscrição-em-mudanças-de-contexto)
@@ -219,9 +222,31 @@ Para inscrever seu dispositivo da TTN e conectá-lo ao **Orion Context Broker (O
 - `application_id`: No formato `nome-da-aplicacao@ttn`
 - `application_key`: Chave de autenticação (API Key)
 
-> Essas informações são essenciais para o provisionamento correto do dispositivo no IoT Agent.
+Para facilitar o tutorial apresenta o arquivo .env_template para execução da requisição e facilidade
 
-## 📌 Localizando as Informações da Aplicação e do Dispositivo
+## 🔧 Configuraando informações
+
+1. Copie o modelo de configuração:
+   ```bash
+   cp .env.template .env
+   ```
+
+2. Edite o arquivo `.env` com suas credenciais:
+   ```bash
+   nano .env  # ou use seu editor de texto/código favorito
+   ```
+
+## ⚠️ Segurança
+
+- Nunca compartilhe seu arquivo `.env`
+- Adicione `.env` ao seu `.gitignore` 
+ ```bash
+   echo ".env" >> .gitignore
+  ```
+
+
+
+## 📌 Localizando informações da Aplicação e do Dispositivo
 
 Acesse o menu lateral em **Applications → (sua aplicação) → End devices**, e selecione o dispositivo cadastrado. Em seguida, na tela de visão geral do dispositivo, você encontrará:
 
@@ -295,6 +320,13 @@ curl --location --request POST 'http://localhost:4041/iot/devices' \
   ]
 }'
 ```
+## 🚀 Execução
+
+Para registrar o dispositivo, execute que contém o script acima:
+```bash
+./scripts/registrarIot.sh
+```
+
 ---
 
 # Configurando a persistência de dados - Cygnus/PostgresSQL
