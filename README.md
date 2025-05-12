@@ -34,8 +34,8 @@ Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo [Lo
   - [🌐 Conta e Dispositivo Registrado na TTN ou ChirpStack](#-conta-e-dispositivo-registrado-na-ttn-ou-chirpstack)
 - [🧱 Iniciando o Projeto](#-iniciando-o-projeto)
 - [Requisitos para a conexão entre o IoT Agent e Orion Context Broker - The Things Stack](#requisitos-para-a-conexão-entre-o-iot-agent-e-orion-context-broker---the-things-stack)
-  - [🔧 Configuraando informações](#-configuraando-informações)
-  - [⚠️ Segurança](#️-segurança)
+    - [🔧 Configuraando informações](#-configuraando-informações)
+    - [⚠️ Segurança](#️-segurança)
   - [📌 Localizando informações da Aplicação e do Dispositivo](#-localizando-informações-da-aplicação-e-do-dispositivo)
   - [🔗 Configuração do MQTT](#-configuração-do-mqtt)
   - [📤 Registro do Dispositivo no IoT Agent](#-registro-do-dispositivo-no-iot-agent)
@@ -44,9 +44,9 @@ Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo [Lo
   - [PostgreSQL - Configuração do Cygnus](#postgresql---configuração-do-cygnus)
     - [Inscrição em Mudanças de Contexto](#inscrição-em-mudanças-de-contexto)
       - [5️⃣ Requisição:](#5️⃣-requisição)
+  - [🚀 Execução](#-execução-1)
   - [PostgreSQL - Leitura de Dados do Banco](#postgresql---leitura-de-dados-do-banco)
 - [Grafana - Visualização de dados persistidos](#grafana---visualização-de-dados-persistidos)
-- [Grafana - Visualização de dados persistidos](#grafana---visualização-de-dados-persistidos-1)
   - [Acessando o Grafana via Docker](#acessando-o-grafana-via-docker)
   - [Adicionando uma Fonte de Dados PostgreSQL](#adicionando-uma-fonte-de-dados-postgresql)
     - [Connection](#connection)
@@ -193,9 +193,9 @@ cd GUIA_MONITORAMENTO_DADOS_FIWARE-LORAWAN
 
 Inicie os Contêineres:
 ```bash
-docker-compose -f docker/docker-compose.yml up -d
+docker-compose -f docker/docker-compose.yml up
 ```
-Verifique se estão inicializados:
+Abre outra janela no terminal e verifique se os containêrs estão inicializados:
 ```bash
 docker ps
 ```
@@ -224,7 +224,7 @@ Para inscrever seu dispositivo da TTN e conectá-lo ao **Orion Context Broker (O
 
 Para facilitar o tutorial apresenta o arquivo .env_template para execução da requisição e facilidade
 
-## 🔧 Configuraando informações
+### 🔧 Configuraando informações
 
 1. Copie o modelo de configuração:
    ```bash
@@ -236,7 +236,7 @@ Para facilitar o tutorial apresenta o arquivo .env_template para execução da r
    nano .env  # ou use seu editor de texto/código favorito
    ```
 
-## ⚠️ Segurança
+### ⚠️ Segurança
 
 - Nunca compartilhe seu arquivo `.env`
 - Adicione `.env` ao seu `.gitignore` 
@@ -271,6 +271,7 @@ Para conectar o IoT Agent à plataforma TTN vamos utilizar o protocolo [MQTT](ht
    - `Public address` (exemplo: `au1.cloud.thethings.network:1883`) – este é o **host**
    - `Username` (exemplo: `envcity@ttn`)
    - `Password` – **API Key** que pode ser gerada no próprio painel
+   - `application_id`: ID pode ser encontrado abaixo do nome `Envcity - Monitormaneto de Qualidade do Ar` , no formato `nome-da-aplicacao@ttn` como exemplo: `envcity-aqm@ttn` 
 
 Veja a tela de onde extrair essas informações:
 
@@ -291,42 +292,77 @@ curl --location --request POST 'http://localhost:4041/iot/devices' \
 --header 'fiware-servicepath: /airQuality' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-  "devices": [
-    {
-      "device_id": "tbeam-v1",
-      "entity_name": "PaxCounter",
-      "entity_type": "LoraDevice",
-      "attributes": [
-        { "object_id": "field1", "name": "Field1", "type": "Number" },
-        { "object_id": "field2", "name": "Field2", "type": "Number" },
-        { "object_id": "field3", "name": "Field3", "type": "Number" }
-      ],
-      "internal_attributes": {
-        "lorawan": {
-          "application_server": {
-            "host": "<ENDEREÇO_MQTT>",           // Ex: au1.cloud.thethings.network:1883
-            "username": "<USUÁRIO_MQTT>",        // Ex: nome-aplicacao@ttn
-            "password": "<API_KEY_MQTT>",
-            "provider": "TTN"
-          },
-          "app_eui": "<APP_EUI>",
-          "dev_eui": "<DEV_EUI>",
-          "application_id": "<APPLICATION_ID>",   // Ex: nome-aplicacao@ttn
-          "application_key": "<APPLICATION_KEY>",
-          "data_model": "application_server"
+    "devices": [
+        {
+            "device_id": "'"$DEVICE_ID"'",
+            "entity_name": "'"$ENTITY_NAME"'",
+            "entity_type": "'"$ENTITY_TYPE"'",
+            "attributes": [
+                { "object_id": "best_co", "name": "Best_CO", "type": "Float"},
+                { "object_id": "best_no2", "name": "Best_NO2", "type": "Float"},
+                { "object_id": "best_ox", "name": "Best_OX", "type": "Float"},
+                { "object_id": "best_so2", "name": "Best_SO2", "type": "Float"},
+                { "object_id": "co_1", "name": "CO_1", "type": "Float"},
+                { "object_id": "co_2", "name": "CO_2", "type": "Float"},
+                { "object_id": "co_3", "name": "CO_3", "type": "Float"},
+                { "object_id": "co_4", "name": "CO_4", "type": "Float"},
+                { "object_id": "co_ae", "name": "CO_AE", "type": "Float"},
+                { "object_id": "co_we", "name": "CO_WE", "type": "Float"},
+                { "object_id": "no2_1", "name": "NO2_1", "type": "Float"},
+                { "object_id": "no2_2", "name": "NO2_2", "type": "Float"},
+                { "object_id": "no2_3", "name": "NO2_3", "type": "Float"},
+                { "object_id": "no2_4", "name": "NO2_4", "type": "Float"},
+                { "object_id": "no2_ae", "name": "NO2_AE", "type": "Float"},
+                { "object_id": "no2_we", "name": "NO2_WE", "type": "Float"},
+                { "object_id": "ox_1", "name": "OX_1", "type": "Float"},
+                { "object_id": "ox_2", "name": "OX_2", "type": "Float"},
+                { "object_id": "ox_3", "name": "OX_3", "type": "Float"},
+                { "object_id": "ox_4", "name": "OX_4", "type": "Float"},
+                { "object_id": "ox_ae", "name": "OX_AE", "type": "Float"},
+                { "object_id": "ox_we", "name": "OX_WE", "type": "Float"},
+                { "object_id": "so2_1", "name": "SO2_1", "type": "Float"},
+                { "object_id": "so2_2", "name": "SO2_2", "type": "Float"},
+                { "object_id": "so2_3", "name": "SO2_3", "type": "Float"},
+                { "object_id": "so2_4", "name": "SO2_4", "type": "Float"},
+                { "object_id": "so2_ae", "name": "SO2_AE", "type": "Float"},
+                { "object_id": "so2_we", "name": "SO2_WE", "type": "Float"},
+                { "object_id": "Temperatura", "name": "Temperatura", "type": "Float"},
+                { "object_id": "Umidade", "name": "Umidade", "type": "Float"},
+                { "object_id": "data", "name": "DATA", "type": "Text"},
+                { "object_id": "hora", "name": "HORA", "type": "Text"}
+            ],
+            "internal_attributes": {
+                "lorawan": {
+                    "application_server": {
+                        "host": "'"$APP_SERVER_HOST"'",
+                        "username": "'"$APP_SERVER_USERNAME"'",
+                        "password": "'"$APP_SERVER_PASSWORD"'",
+                        "provider": "TTN"
+                    },
+                    "app_eui": "'"$APP_EUI"'",
+                    "dev_eui": "'"$DEV_EUI"'",
+                    "application_id": "'"$APPLICATION_ID"'",
+                    "application_key": "'"$APPLICATION_KEY"'",
+                    "data_model": "'"$DATA_MODEL"'"
+                }
+            }
         }
-      }
-    }
-  ]
+    ]
 }'
 ```
+> ❗❗ No exemplo acima são utilizados os atibutos da estação de monitoramento de Qualidade do ar registrada como Envcity, contudo o usuário deve adaptar os atributos ao seu dispositivo IoT.
 ## 🚀 Execução
 
-Para registrar o dispositivo, execute que contém o script acima:
+Após preencher os dados no arquivo `.env`. Para registrar o dispositivo, execute o script acima ou o seguinte comando:
 ```bash
-./scripts/registrarIot.sh
+bash ./scripts/registerLoraDevice.sh
 ```
-
+- Caso não execute tente entrar no diretório executar o seguinte comando
+```bash
+chmod +x registerLoraDevice.sh
+#Depois execute
+./registerLoraDevice.sh
+```
 ---
 
 # Configurando a persistência de dados - Cygnus/PostgresSQL
@@ -344,9 +380,7 @@ Configuração básica:
 
 ### Inscrição em Mudanças de Contexto
 
-Para notificar o Cygnus sobre mudanças no contexto:
-
-Enviar requisição POST para /v2/subscription no Orion CB
+Para notificar o Cygnus sobre mudanças no contexto devemos enviar requisição POST para /v2/subscription no Orion CB
 
 Parâmetros-chave:
 
@@ -365,7 +399,7 @@ curl -iX POST \
   'http://localhost:1026/v2/subscriptions' \
   -H 'Content-Type: application/json' \
   -H 'fiware-service: openiot' \
-  -H 'fiware-servicepath: /' \
+  -H 'fiware-servicepath: /<seu_caminho_fiware>' \
   -d '{
   "description": "Notify Cygnus Postgres of all context changes",
   "subject": {
@@ -383,6 +417,13 @@ curl -iX POST \
   "throttling": 5
 }'
 ```
+## 🚀 Execução
+
+Para excutar o script acima execute o seguinte comando:
+```bash
+bash ./scripts/CygnusSubscription.sh
+```
+---
 Para verificar a inscrição, realize a seguinte requisição:
 
 ```bash
@@ -406,13 +447,14 @@ Para exibir os seguintes Banco de Dados, exiba o seguinte comando
 Resultado:
 
 ```console
-   Name    |  Owner   | Encoding |  Collate   |   Ctype    |   Access privileges
------------+----------+----------+------------+------------+-----------------------
- postgres  | postgres | UTF8     | en_US.utf8 | en_US.utf8 |
- template0 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
-           |          |          |            |            | postgres=CTc/postgres
- template1 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
-           |          |          |            |            | postgres=CTc/postgres
+                                                    List of databases
+   Name    |  Owner   | Encoding | Locale Provider |  Collate   |   Ctype    | Locale | ICU Rules |   Access privileges   
+-----------+----------+----------+-----------------+------------+------------+--------+-----------+-----------------------
+ postgres  | postgres | UTF8     | libc            | en_US.utf8 | en_US.utf8 |        |           | 
+ template0 | postgres | UTF8     | libc            | en_US.utf8 | en_US.utf8 |        |           | =c/postgres          +
+           |          |          |                 |            |            |        |           | postgres=CTc/postgres
+ template1 | postgres | UTF8     | libc            | en_US.utf8 | en_US.utf8 |        |           | =c/postgres          +
+           |          |          |                 |            |            |        |           | postgres=CTc/postgres
 (3 rows)
 ```
 
@@ -424,11 +466,11 @@ Consulta:
 
 Resultado:
 ```console
-  List of schemas
-  Name   |  Owner
----------+----------
+       List of schemas
+  Name   |       Owner       
+---------+-------------------
  openiot | postgres
- public  | postgres
+ public  | pg_database_owner
 (2 rows)
 ```
 
@@ -446,12 +488,10 @@ ORDER BY table_schema, table_name;
 
 Resultado:
 ```console
- table_schema |    table_name
---------------+-------------------
- openiot      | door_001_door
- openiot      | lamp_001_lamp
- openiot      | motion_001_motion
-(3 rows)
+ table_schema |            table_name            
+--------------+----------------------------------
+ openiot      | airquality_sensorcvel_loradevice
+(1 row)
 ```
 
 O campo table_schema corresponde ao cabeçalho fiware-service fornecido com os dados de contexto.
@@ -459,32 +499,36 @@ O campo table_schema corresponde ao cabeçalho fiware-service fornecido com os d
 Para consultar os dados de uma tabela, execute:
 Consulta:
 ```sql
-SELECT * FROM openiot.motion_001_motion LIMIT 10;
+SELECT * FROM openiot.airquality_sensorcvel_loradevice LIMIT 10;
 ```
 Resultado (exemplo):
 ```console
-  recvtimets   |         recvtime         | fiwareservicepath |  entityid  | entitytype |  attrname   |   attrtype   |        attrvalue         |                                    attrmd
----------------+--------------------------+-------------------+------------+------------+-------------+--------------+--------------------------+------------------------------------------------------------------------------
- 1528803005491 | 2018-06-12T11:30:05.491Z | /                 | Motion:001 | Motion     | TimeInstant | ISO8601      | 2018-06-12T11:30:05.423Z | []
- 1528803005491 | 2018-06-12T11:30:05.491Z | /                 | Motion:001 | Motion     | count       | Integer      | 7                        | [{"name":"TimeInstant","type":"ISO8601","value":"2018-06-12T11:30:05.423Z"}]
-...
+  recvtimets   |        recvtime         | fiwareservicepath |  entityid  | entitytype |  attrname   | attrtype | attrvalue | attrmd 
+---------------+-------------------------+-------------------+------------+------------+-------------+----------+-----------+--------
+ 1747092312862 | 2025-05-12 23:25:12.862 | /airQuality       | SensorCvel | LoraDevice | CO_2        | Float    | null      | []
+ 1747092312862 | 2025-05-12 23:25:12.862 | /airQuality       | SensorCvel | LoraDevice | CO_1        | Float    | null      | []
+ 1747092312862 | 2025-05-12 23:25:12.862 | /airQuality       | SensorCvel | LoraDevice | CO_AE       | Float    | null      | []
+ 1747092312862 | 2025-05-12 23:25:12.862 | /airQuality       | SensorCvel | LoraDevice | SO2_WE      | Float    | null      | []
+ 1747092312862 | 2025-05-12 23:25:12.862 | /airQuality       | SensorCvel | LoraDevice | Temperatura | Float    | null      | []
+ 1747092312862 | 2025-05-12 23:25:12.862 | /airQuality       | SensorCvel | LoraDevice | Umidade     | Float    | null      | []
+ 1747092312862 | 2025-05-12 23:25:12.862 | /airQuality       | SensorCvel | LoraDevice | CO_WE       | Float    | null      | []
+ 1747092312862 | 2025-05-12 23:25:12.862 | /airQuality       | SensorCvel | LoraDevice | HORA        | Text     | null      | []
+ 1747092312862 | 2025-05-12 23:25:12.862 | /airQuality       | SensorCvel | LoraDevice | NO2_AE      | Float    | null      | []
+ 1747092312862 | 2025-05-12 23:25:12.862 | /airQuality       | SensorCvel | LoraDevice | OX_WE       | Float    | null      | []
 ```
 
 A sintaxe padrão do PostgreSQL pode ser usada para filtrar os campos e valores desejados. Por exemplo, para consultar a taxa de contagem do sensor de movimento com id = Motion:001_Motion, use:
 Consulta:
 
 ```sql
-SELECT recvtime, attrvalue FROM openiot.motion_001_motion WHERE attrname = 'count' LIMIT 10;
+SELECT recvtime, attrvalue FROM openiot.airquality_sensorcvel_loradevice WHERE attrname = 'count' LIMIT 10;
 ```
 
 Resultado:
 ```console
-         recvtime         | attrvalue
---------------------------+-----------
- 2018-06-12T11:30:05.491Z | 7
- 2018-06-12T11:30:35.501Z | 10
- 2018-06-12T11:30:41.563Z | 12
- ...
+ recvtime | attrvalue 
+----------+-----------
+(0 rows)
 ```
 
 Para sair do cliente Postgres e retornar ao terminal, use:
@@ -501,15 +545,7 @@ Para sair do cliente Postgres e retornar ao terminal, use:
 > uma prática aceitável em um tutorial, para um ambiente de produção, você pode evitar esse risco aplicando
 > [Docker Secrets](https://blog.docker.com/2017/02/docker-secrets-management/)
 
-Claro! Aqui está um **tutorial em Markdown puro** (sem renderização) que explica como acessar o Grafana no Docker via `localhost:3003`, adicionar uma *data source* PostgreSQL, inserir as credenciais e criar um painel com um exemplo de consulta:
 
-
-# Grafana - Visualização de dados persistidos
-
-> [!IMPORTANTE]
-> Passar o nome de usuário e senha em variáveis de ambiente de texto simples como esta é um risco de segurança. Embora isso seja
-> uma prática aceitável em um tutorial, para um ambiente de produção, você pode evitar esse risco aplicando
-> [Docker Secrets](https://blog.docker.com/2017/02/docker-secrets-management/)
 
 ---
 
@@ -543,7 +579,7 @@ As credenciais padrão são geralmente:
 ### Authentication
 
 - **Username:** `postgres`
-- **Password:** (senha configurada no seu `docker-compose.yml`)
+- **Password:** (senha configurada no seu `docker-compose.yml` que é password)
 - **TLS/SSL Mode:** `disable`
 
 5. Clique em **Save & Test** para verificar se a conexão está funcionando.
@@ -562,7 +598,7 @@ SELECT
     recvtime::timestamp AS "time",
     NULLIF(attrvalue, 'null')::float AS "SO2"
 FROM
-    openiot.airquality_env2_loradevice
+    openiot.airquality_sensorcvel_loradevice
 WHERE
     attrname = 'Best_SO2'
 ORDER BY

@@ -1,19 +1,24 @@
 #!/bin/bash
 
-
-#Verificar se o arquivo .env existe
-if [ ! -f .env_template ]; then
+# Verifica se o arquivo .env existe
+if [ ! -f .env ]; then
     echo "Erro: Arquivo .env não encontrado."
     echo "Crie um arquivo .env baseado no .env.template e preencha com suas credenciais."
     exit 1
 fi
 
-#Carrega as variáveis do .env
-source .env_template
+# Carrega as variáveis do .env
+source .env
 
-#Verifica variáveis obrigatórias
+# Verifica variáveis obrigatórias
 if [ -z "$DEVICE_ID" ] || [ -z "$APP_EUI" ] || [ -z "$DEV_EUI" ] || [ -z "$APPLICATION_ID" ] || [ -z "$APPLICATION_KEY" ]; then
     echo "Erro: Variáveis obrigatórias não definidas no .env"
+    exit 1
+fi
+
+# Verifica se SERVICE_PATH está definido
+if [ -z "$SERVICE_PATH" ]; then
+    echo "Erro: Variável SERVICE_PATH não definida no .env"
     exit 1
 fi
 
@@ -21,16 +26,17 @@ fi
 echo "Registrando dispositivo $DEVICE_ID no FIWARE..."
 echo
 
-curl --location --request POST 'http://localhost:4041/iot/devices' \
+response=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" \
+--location --request POST 'http://localhost:4041/iot/devices' \
 --header 'fiware-service: openiot' \
---header 'fiware-servicepath: /airQuality' \
+--header "fiware-servicepath: $SERVICE_PATH" \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "devices": [
         {
             "device_id": "'"$DEVICE_ID"'",
             "entity_name": "'"$ENTITY_NAME"'",
-            "entity_type": "'"$ENTITY_TYPE"'",
+            "entity_type": "LoraDevice",
             "attributes": [
                 { "object_id": "best_co", "name": "Best_CO", "type": "Float"},
                 { "object_id": "best_no2", "name": "Best_NO2", "type": "Float"},
@@ -82,7 +88,17 @@ curl --location --request POST 'http://localhost:4041/iot/devices' \
             }
         }
     ]
-}'
+}')
 
-echo
-echo "Dispositivo registrado com sucesso!"
+# Extrai resposta e código de status
+body=$(echo "$response" | sed -e 's/HTTPSTATUS\:.*//g')
+status=$(echo "$response" | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+
+if [ "$status" -ne 201 ]; then
+    echo "Erro ao registrar dispositivo: HTTP $status"
+    echo "Resposta do servidor:"
+    echo "$body"
+    exit 1
+else
+    echo "Dispositivo registrado com sucesso!"
+fi

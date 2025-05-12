@@ -1,7 +1,6 @@
 version: "3.7"
 
 services:
-  
   mongodb:
     extends:
       file: docker-compose-dev.yml
