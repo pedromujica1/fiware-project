@@ -32,8 +32,8 @@ Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo [Lo
     - [✅ Verificação de versões](#-verificação-de-versões)
   - [💻 Requisito para Windows: WSL 2](#-requisito-para-windows-wsl-2)
   - [🌐 Conta e Dispositivo Registrado na TTN ou ChirpStack](#-conta-e-dispositivo-registrado-na-ttn-ou-chirpstack)
-- [🧱 Iniciando o Projeto](#-iniciando-o-projeto)
-- [Requisitos para a conexão entre o IoT Agent e Orion Context Broker - The Things Stack](#requisitos-para-a-conexão-entre-o-iot-agent-e-orion-context-broker---the-things-stack)
+- [🧱 Iniciando o Projeto - Configuração TTN](#-iniciando-o-projeto---configuração-ttn)
+  - [Requisitos para a conexão entre o IoT Agent e Orion Context Broker - The Things Stack](#requisitos-para-a-conexão-entre-o-iot-agent-e-orion-context-broker---the-things-stack)
     - [🔧 Configuraando informações](#-configuraando-informações)
     - [⚠️ Segurança](#️-segurança)
   - [📌 Localizando informações da Aplicação e do Dispositivo](#-localizando-informações-da-aplicação-e-do-dispositivo)
@@ -188,7 +188,7 @@ Ambas as plataformas permitem o uso dos seguintes **modelos de codificação de 
 
 ---
 
-# 🧱 Iniciando o Projeto
+# 🧱 Iniciando o Projeto - Configuração TTN
 
 Clone o repositório e gere as imagens necessárias localmente:
 
@@ -218,7 +218,7 @@ d0fc0101c533   mongo:4.4                   "docker-entrypoint.s…"   3 weeks ag
 
 Caso deseje verificar e modificar o arquivo principal. A configuração de cada Contâiner pode ser encontrada neste arquivo [aqui](https://github.com/pedromujica1/GUIA_MONITORAMENTO_DADOS_FIWARE-LORAWAN/docker/docker-compose.yml)
 
-# Requisitos para a conexão entre o IoT Agent e Orion Context Broker - The Things Stack
+## Requisitos para a conexão entre o IoT Agent e Orion Context Broker - The Things Stack
 
 Para inscrever seu dispositivo da TTN e conectá-lo ao **Orion Context Broker (OrionCB)** via IoT Agent LoRaWAN, você precisará das seguintes informações:
 
