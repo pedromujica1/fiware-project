@@ -356,7 +356,7 @@ curl --location --request POST 'http://localhost:4041/iot/devices' \
     ]
 }'
 ```
-> ❗❗ No exemplo acima são utilizados os atibutos da estação de monitoramento de Qualidade do ar registrada como Envcity, contudo o usuário deve adaptar os atributos ao seu dispositivo IoT.
+> ❗❗ No exemplo acima são utilizados os atibutos da estação de monitoramento de Qualidade do ar registrada como Envcity, contudo o usuário deve adaptar os atributos ao seu dispositivo IoT registrado na TTN.
 ## 🚀 Execução
 
 Após preencher os dados no arquivo `.env`. Para registrar o dispositivo, execute o script acima ou o seguinte comando:
