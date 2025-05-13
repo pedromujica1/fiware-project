@@ -46,7 +46,7 @@ Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo [Lo
     - [🔑 *Parâmetros-chave*:](#-parâmetros-chave)
       - [🧪 Exemplo de requisição:](#-exemplo-de-requisição)
     - [🚀 🧰 Execução via Script bash](#--execução-via-script-bash)
-    - [🔍 Verificar Subscrições Ativas](#-verificar-subscrições-ativas)
+    - [🔍 Verificar inscrições ativas](#-verificar-inscrições-ativas)
   - [PostgreSQL: Leitura de Dados](#postgresql-leitura-de-dados)
     - [🧑‍💻 Acessar o banco via terminal](#-acessar-o-banco-via-terminal)
     - [📋 Ver banco de dados disponíveis](#-ver-banco-de-dados-disponíveis)
@@ -58,9 +58,10 @@ Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo [Lo
   - [Adicionando uma Fonte de Dados PostgreSQL](#adicionando-uma-fonte-de-dados-postgresql)
     - [📥 Preencha os campos:](#-preencha-os-campos)
   - [Criando um Dashboard com Consulta SQL](#criando-um-dashboard-com-consulta-sql)
-  - [Considerações Finais](#considerações-finais)
-- [Próximos passos](#próximos-passos)
-  - [License](#license)
+    - [Atenção!](#atenção)
+  - [🧠 Considerações Finais](#-considerações-finais)
+    - [📚 Referências Recomendadas](#-referências-recomendadas)
+  - [🤝 Comunidade e Colaboração](#-comunidade-e-colaboração)
 
 
 </details>
@@ -373,13 +374,13 @@ chmod +x registerLoraDevice.sh
 
 # 📦 Configurando a persistência de dados - Cygnus/PostgresSQL
 
-O **Orion Context Broker* armazena apenas metadados no MongoDB. Para persistir os grandes volumes de dados dos sensores, usamos o conector *[Cygnus](https://fiware-cygnus.readthedocs.io/en/latest/)* para enviar esses dados ao *[PostgreSQL](https://www.postgresql.org/docs/ )* (banco relacional).
+O **Orion Context Broker** armazena apenas metadados no MongoDB. Para persistir os grandes volumes de dados dos sensores, usamos o conector *[Cygnus](https://fiware-cygnus.readthedocs.io/en/latest/)* para enviar esses dados ao *[PostgreSQL](https://www.postgresql.org/docs/ )* (banco relacional).
 
 ## 🛠️ Etapas da Persistência
 
-  - 1. 🔔 Criar uma inscrição (subscription) no Orion CB para notificar o Cygnus sobre alterações nas entidades IoT.
+  -  🔔 Criar uma inscrição (subscription) no Orion CB para notificar o Cygnus sobre alterações nas entidades IoT.
 
-  - 2. 🗃️ O Cygnus armazena os dados recebidos no PostgreSQL, organizados por schema e tabelas.
+  -  🗃️ O Cygnus armazena os dados recebidos no PostgreSQL, organizados por schema e tabelas.
 
 
 ### 📩 1. Criar a Inscrição (Subscription)
@@ -428,7 +429,7 @@ Para excutar o script acima, execute o seguinte comando:
 bash ./scripts/CygnusSubscription.sh
 ```
 ---
-### 🔍 Verificar Subscrições Ativas
+### 🔍 Verificar inscrições ativas
 
 ```bash
 curl -X GET \
@@ -536,7 +537,7 @@ Para sair do cliente Postgres e retornar ao terminal, use:
 
 ## 🌐 Acesso ao Grafana
 
-Se estiver executando o Grafana via Docker, o contêiner geralmente é configurado com a porta 3003 mapeada localmente. Acesse pelo navegador:
+Como a a aplicação executa o [Grafana](https://grafana.com/) via Docker, o contêiner é configurado com a porta 3003 mapeada localmente. Acesse pelo navegador:
 
 ```
 http://localhost:3003
@@ -592,24 +593,60 @@ ORDER BY
 7. Clique em **Apply** para salvar o painel no dashboard.
 8. Seus dados de seu dispostivo IoT devem aparecer no novo Grafana Dashboard!
 
----
-
-## Considerações Finais
-
+### Atenção!
 - Certifique-se de que o container do Grafana esteja na mesma **rede Docker** que o container do PostgreSQL (`fiware_default`, por exemplo).
 - Em caso de erros, verifique os logs dos containers com:
 ```bash
 docker logs <nome-do-container>
 ```
-- Também verifique o nome do /fiware-service declarado
+---
 
-# Próximos passos
+## 🧠 Considerações Finais
 
-Want to learn how to add more complexity to your application by adding advanced features? You can find out by reading
-the other [tutorials in this series](https://fiware-tutorials.rtfd.io)
+Este tutorial apresentou uma configuração completa para **persistência de dados de sensores IoT com FIWARE**, utilizando:
+
+- 🔗 *Orion Context Broker* para gerenciamento de contexto
+- 📤 *Cygnus* como conector de dados
+- 🐘 *PostgreSQL* como banco de dados relacional
+- 📊 *Grafana* para visualização de dados históricos
+
+Mas isso é só o começo! O ecossistema FIWARE é **flexível, open-source e extensível**, permitindo integração com várias outras tecnologias e bancos de dados, como:
+
+- **MySQL**
+- **MongoDB**
+- **CKAN**
+- **HDFS**
+- **Amazon S3**
+- **ElasticSearch**
+- ... e muito mais!
+
+### 📚 Referências Recomendadas
+
+Explore configurações alternativas, exemplos avançados e ferramentas complementares nos links abaixo:
+
+- 🔎 [FIWARE - Persisting Context Data with Apache Flume (Postman Collection)](https://www.postman.com/fiware/fiware-foundation-ev-s-public-workspace/collection/8yxw6rx/fiware-persisting-context-data-apache-flume)
+- 🧪 [FIWARE Public Workspace no Postman (com várias coleções de testes)](https://www.postman.com/fiware/fiware-foundation-ev-s-public-workspace/overview)
+- 📖 [FIWARE Tutorials (ReadTheDocs)](https://fiware-tutorials.readthedocs.io/en/latest/)
+
+Essas fontes são excelentes para:
+
+- 📦 Testar componentes FIWARE via API com o Postman
+- 🧰 Aprender como usar diferentes bancos de dados com Cygnus e outros conectores
+- 🚀 Explorar o universo Open Source FIWARE e suas aplicações em Cidades Inteligentes, Indústria 4.0, Energia, Saúde e mais
 
 ---
 
-## License
+## 🤝 Comunidade e Colaboração
 
-[MIT](LICENSE) © 2018-2025 FIWARE Foundation e.V.
+Se você tiver dúvidas, sugestões ou encontrar erros:
+
+- 💬 Abra uma *issue* nos repositórios oficiais do [FIWARE no GitHub](https://github.com/FIWARE)
+- 🔧 Contribua com *pull requests*, melhorando a documentação, corrigindo bugs ou adicionando novos tutoriais
+- 🤝 Participe da comunidade FIWARE: Slack, Stack Overflow e fóruns abertos
+
+FIWARE é um projeto **aberto e colaborativo** — todos são bem-vindos para contribuir!
+
+---
+
+🚀 **Bons testes e boas medições com seus sensores IoT!** 🌍🌱
+
