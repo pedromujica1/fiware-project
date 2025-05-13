@@ -40,17 +40,23 @@ Este tutorial mostra como integrar sua solução IoT que utiliza o protocolo [Lo
   - [🔗 Configuração do MQTT](#-configuração-do-mqtt)
   - [📤 Registro do Dispositivo no IoT Agent](#-registro-do-dispositivo-no-iot-agent)
   - [🚀 Execução](#-execução)
-- [Configurando a persistência de dados - Cygnus/PostgresSQL](#configurando-a-persistência-de-dados---cygnuspostgressql)
-  - [PostgreSQL - Configuração do Cygnus](#postgresql---configuração-do-cygnus)
-    - [Inscrição em Mudanças de Contexto](#inscrição-em-mudanças-de-contexto)
-      - [5️⃣ Requisição:](#5️⃣-requisição)
-  - [🚀 Execução](#-execução-1)
-  - [PostgreSQL - Leitura de Dados do Banco](#postgresql---leitura-de-dados-do-banco)
-- [Grafana - Visualização de dados persistidos](#grafana---visualização-de-dados-persistidos)
-  - [Acessando o Grafana via Docker](#acessando-o-grafana-via-docker)
+- [📦 Configurando a persistência de dados - Cygnus/PostgresSQL](#-configurando-a-persistência-de-dados---cygnuspostgressql)
+  - [🛠️ Etapas da Persistência](#️-etapas-da-persistência)
+    - [📩 1. Criar a Inscrição (Subscription)](#-1-criar-a-inscrição-subscription)
+    - [🔑 *Parâmetros-chave*:](#-parâmetros-chave)
+      - [🧪 Exemplo de requisição:](#-exemplo-de-requisição)
+    - [🚀 🧰 Execução via Script bash](#--execução-via-script-bash)
+    - [🔍 Verificar Subscrições Ativas](#-verificar-subscrições-ativas)
+  - [PostgreSQL: Leitura de Dados](#postgresql-leitura-de-dados)
+    - [🧑‍💻 Acessar o banco via terminal](#-acessar-o-banco-via-terminal)
+    - [📋 Ver banco de dados disponíveis](#-ver-banco-de-dados-disponíveis)
+    - [📚 Listar tabelas no schema `openiot`](#-listar-tabelas-no-schema-openiot)
+    - [🔎 Consultar dados da tabela](#-consultar-dados-da-tabela)
+    - [🔎 Filtrar por atributo específico](#-filtrar-por-atributo-específico)
+- [📊 Grafana - Visualização de dados persistidos](#-grafana---visualização-de-dados-persistidos)
+  - [🌐 Acesso ao Grafana](#-acesso-ao-grafana)
   - [Adicionando uma Fonte de Dados PostgreSQL](#adicionando-uma-fonte-de-dados-postgresql)
-    - [Connection](#connection)
-    - [Authentication](#authentication)
+    - [📥 Preencha os campos:](#-preencha-os-campos)
   - [Criando um Dashboard com Consulta SQL](#criando-um-dashboard-com-consulta-sql)
   - [Considerações Finais](#considerações-finais)
 - [Próximos passos](#próximos-passos)
@@ -365,34 +371,32 @@ chmod +x registerLoraDevice.sh
 ```
 ---
 
-# Configurando a persistência de dados - Cygnus/PostgresSQL
+# 📦 Configurando a persistência de dados - Cygnus/PostgresSQL
 
-O Orion CB armazena apenas metadados no MongoDB. Para persistir os grandes volumes de dados dos sensores, usamos o conector Cygnus para enviar esses dados ao PostgreSQL (banco relacional).
+O **Orion Context Broker* armazena apenas metadados no MongoDB. Para persistir os grandes volumes de dados dos sensores, usamos o conector *[Cygnus](https://fiware-cygnus.readthedocs.io/en/latest/)* para enviar esses dados ao *[PostgreSQL](https://www.postgresql.org/docs/ )* (banco relacional).
 
-Configuração básica:
+## 🛠️ Etapas da Persistência
 
-  - Enviar request de assinatura ao Orion CB para notificar o Cygnus sobre mudanças nas entidades
+  - 1. 🔔 Criar uma inscrição (subscription) no Orion CB para notificar o Cygnus sobre alterações nas entidades IoT.
 
-  - O Cygnus então armazenará os dados nas tabelas do PostgreSQL
+  - 2. 🗃️ O Cygnus armazena os dados recebidos no PostgreSQL, organizados por schema e tabelas.
 
 
-## PostgreSQL - Configuração do Cygnus
+### 📩 1. Criar a Inscrição (Subscription)
 
-### Inscrição em Mudanças de Contexto
+Enviamos uma requisição POST para o Orion CB, no endpoint /v2/subscriptions, para notificar o Cygnus.
 
-Para notificar o Cygnus sobre mudanças no contexto devemos enviar requisição POST para /v2/subscription no Orion CB
+### 🔑 *Parâmetros-chave*:
 
-Parâmetros-chave:
+  - `fiware-service` e `fiware-servicepath`: definem o serviço/caminho dos dados. **Atenção**: O caminho definido deve ser o mesmo configurado na requisição anterior.
 
-  - fiware-service e fiware-servicepath filtram por dispositivo IoT. **Atenção**: O caminho definido deve ser o mesmo configurado na requisição anterior.
+  - `idPattern: ".*"` monitora todas entidades
 
-  - idPattern: ".*" monitora todas entidades
+  - `URL` aponta para CYGNUS_POSTGRESQL_SERVICE_PORT
 
-  - URL aponta para CYGNUS_POSTGRESQL_SERVICE_PORT
+  - `throttling` controla frequência de amostragem
 
-  - throttling controla frequência de amostragem
-
-#### 5️⃣ Requisição:
+#### 🧪 Exemplo de requisição:
 
 ```console
 curl -iX POST \
@@ -417,14 +421,14 @@ curl -iX POST \
   "throttling": 5
 }'
 ```
-## 🚀 Execução
+### 🚀 🧰 Execução via Script bash
 
-Para excutar o script acima execute o seguinte comando:
+Para excutar o script acima, execute o seguinte comando:
 ```bash
 bash ./scripts/CygnusSubscription.sh
 ```
 ---
-Para verificar a inscrição, realize a seguinte requisição:
+### 🔍 Verificar Subscrições Ativas
 
 ```bash
 curl -X GET \
@@ -433,19 +437,18 @@ curl -X GET \
   -H 'fiware-servicepath: /airQuality'
 ```
 
-## PostgreSQL - Leitura de Dados do Banco
+## PostgreSQL: Leitura de Dados
 
-Para ler os dados do PostgreSQL via linha de comando, é necessário ter acesso ao cliente `postgres`. Para isso, execute uma instância interativa da imagem `postgresql-client`, fornecendo a string de conexão como mostrado abaixo para obter um prompt:
+### 🧑‍💻 Acessar o banco via terminal
 
 ```bash
 docker exec -it db-postgres psql -U postgres -d postgres
 ```
-Para exibir os seguintes Banco de Dados, exiba o seguinte comando
+### 📋 Ver banco de dados disponíveis
 ```console
 \list
 ```
-Resultado:
-
+🔎 Espera-se algo como:
 ```console
                                                     List of databases
    Name    |  Owner   | Encoding | Locale Provider |  Collate   |   Ctype    | Locale | ICU Rules |   Access privileges   
@@ -457,13 +460,10 @@ Resultado:
            |          |          |                 |            |            |        |           | postgres=CTc/postgres
 (3 rows)
 ```
-
-Para exibir a lista de schemas disponíveis, utilize:
-Consulta:
+🧭 Listar schemas
 ```console
 \dn
 ```
-
 Resultado:
 ```console
        List of schemas
@@ -473,31 +473,21 @@ Resultado:
  public  | pg_database_owner
 (2 rows)
 ```
-
-Como resultado da subscrição do Cygnus ao Orion Context Broker, foi criado um novo schema chamado openiot. O nome do schema corresponde ao cabeçalho fiware-service — portanto, openiot armazena o histórico do contexto dos dispositivos IoT.
-Leitura de Contexto Histórico no PostgreSQL
-
-Após rodar o container docker dentro da rede, é possível consultar as informações do banco de dados em execução.
-Consulta:
+### 📚 Listar tabelas no schema `openiot`
 ```sql
 SELECT table_schema, table_name
 FROM information_schema.tables
 WHERE table_schema = 'openiot'
 ORDER BY table_schema, table_name;
 ```
-
-Resultado:
+Exemplo:
 ```console
  table_schema |            table_name            
 --------------+----------------------------------
  openiot      | airquality_sensorcvel_loradevice
 (1 row)
 ```
-
-O campo table_schema corresponde ao cabeçalho fiware-service fornecido com os dados de contexto.
-
-Para consultar os dados de uma tabela, execute:
-Consulta:
+### 🔎 Consultar dados da tabela
 ```sql
 SELECT * FROM openiot.airquality_sensorcvel_loradevice LIMIT 10;
 ```
@@ -517,13 +507,12 @@ Resultado (exemplo):
  1747092312862 | 2025-05-12 23:25:12.862 | /airQuality       | SensorCvel | LoraDevice | OX_WE       | Float    | null      | []
 ```
 
-A sintaxe padrão do PostgreSQL pode ser usada para filtrar os campos e valores desejados. Por exemplo, para consultar a taxa de contagem do sensor de movimento com id = Motion:001_Motion, use:
+### 🔎 Filtrar por atributo específico
 Consulta:
 
 ```sql
 SELECT recvtime, attrvalue FROM openiot.airquality_sensorcvel_loradevice WHERE attrname = 'count' LIMIT 10;
 ```
-
 Resultado:
 ```console
  recvtime | attrvalue 
@@ -536,20 +525,16 @@ Para sair do cliente Postgres e retornar ao terminal, use:
 \q
 ```
 
-
-# Grafana - Visualização de dados persistidos
+# 📊 Grafana - Visualização de dados persistidos
 
 > [!NOTE]
 > 
 > Passar o nome de usuário e senha em variáveis de ambiente de texto simples como esta é um risco de segurança. Embora isso seja
 > uma prática aceitável em um tutorial, para um ambiente de produção, você pode evitar esse risco aplicando
 > [Docker Secrets](https://blog.docker.com/2017/02/docker-secrets-management/)
-
-
-
 ---
 
-## Acessando o Grafana via Docker
+## 🌐 Acesso ao Grafana
 
 Se estiver executando o Grafana via Docker, o contêiner geralmente é configurado com a porta 3003 mapeada localmente. Acesse pelo navegador:
 
@@ -566,29 +551,26 @@ As credenciais padrão são geralmente:
 
 ## Adicionando uma Fonte de Dados PostgreSQL
 
-1. No menu lateral esquerdo do Grafana, clique em **"Configuration" (ícone de engrenagem) > Data Sources**.
+1. No menu lateral esquerdo do Grafana, Vá em ⚙️ **"Configuration"**  > **Data Sources**.
 2. Clique em **"Add data source"**.
 3. Escolha **PostgreSQL**.
 4. Preencha os campos conforme abaixo:
 
-### Connection
+### 📥 Preencha os campos:
 
 - **Host URL:** `postgres-db:5432`
 - **Database name:** `postgres`
-
-### Authentication
-
 - **Username:** `postgres`
 - **Password:** (senha configurada no seu `docker-compose.yml` que é password)
 - **TLS/SSL Mode:** `disable`
 
-5. Clique em **Save & Test** para verificar se a conexão está funcionando.
+1. 🔁 Clique em Save & Test
 
 ---
 
 ## Criando um Dashboard com Consulta SQL
 
-1. No menu lateral, clique em **"Create" > "Dashboard"**.
+1. No menu lateral, clique em ➕ **"Create" > "Dashboard"**.
 2. Clique em **"Add new panel"**.
 3. No editor de consultas, selecione a fonte de dados PostgreSQL criada.
 4. No modo SQL, insira a seguinte consulta:
@@ -608,6 +590,7 @@ ORDER BY
 5. Clique em **Run query** para visualizar os dados.
 6. Configure o tipo de gráfico desejado (ex: linha, barras).
 7. Clique em **Apply** para salvar o painel no dashboard.
+8. Seus dados de seu dispostivo IoT devem aparecer no novo Grafana Dashboard!
 
 ---
 
@@ -615,12 +598,10 @@ ORDER BY
 
 - Certifique-se de que o container do Grafana esteja na mesma **rede Docker** que o container do PostgreSQL (`fiware_default`, por exemplo).
 - Em caso de erros, verifique os logs dos containers com:
-
 ```bash
 docker logs <nome-do-container>
 ```
-
-- Para múltiplos sensores ou atributos, modifique o filtro `attrname` ou crie múltiplos painéis.
+- Também verifique o nome do /fiware-service declarado
 
 # Próximos passos
 
