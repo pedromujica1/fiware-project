@@ -432,10 +432,7 @@ bash ./scripts/CygnusSubscription.sh
 ### 🔍 Verificar inscrições ativas
 
 ```bash
-curl -X GET \
-  'http://localhost:1026/v2/subscriptions/' \
-  -H 'fiware-service: openiot' \
-  -H 'fiware-servicepath: /airQuality'
+bash ./scripts/SubscriptionVerification.sh
 ```
 
 ## PostgreSQL: Leitura de Dados
