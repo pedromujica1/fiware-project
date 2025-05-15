@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#Colocar permissão
+chmod 700 ./scripts/registerLoraDevice.sh
+
 # Verifica se o arquivo .env existe
 if [ ! -f .env ]; then
     echo "Erro: Arquivo .env não encontrado."
