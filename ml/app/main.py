@@ -9,6 +9,8 @@ from typing import Optional
 #Third-party imports
 import numpy as np
 from joblib import load
+import pandas as pd
+import os
 
 #Modelos Pydantic para input do modelo
 class InputData(BaseModel):
@@ -30,6 +32,7 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"],
 
 
 #Carregando modelo
+model_path = os.path.join(os.path.dirname(__file__), 'RF_Regressor.joblib')
 modelo = load('RF_Regressor.joblib') 
 
 
@@ -108,13 +111,8 @@ async def testar_conexao():
 async def calculate_prediction(data: InputData):
     
     #Constrói o vetor de entrada
-    entrada = np.array([
-        data.e2sp_co,
-        data.e2sp_co_we,
-        data.e2sp_co_ae,
-        data.e2sp_temp,
-        data.pin_umid
-    ]).reshape(1, -1) # 1 amostra, 5 features calculados pelo numpy
+    entrada = pd.DataFrame([[data.e2sp_co, data.e2sp_co_we, data.e2sp_co_ae, data.e2sp_temp, data.pin_umid]],columns=['e2sp_co', 'e2sp_co_we', 'e2sp_co_ae', 
+    'e2sp_temp', 'pin_umid'])  # Use os mesmos nomes do treino # 1 amostra, 5 features calculados pelo numpy
 
     # Realiza a predição
     resultado = modelo.predict(entrada)
@@ -125,13 +123,14 @@ async def calculate_prediction(data: InputData):
 @app.post("/orion/subscribe", summary="📡 Notificar quando SensorCvel atualizar", tags=['Notification'])
 async def orion_subscripton():
     ORION_SUBSCRIPTION_URL = "http://localhost:1026/v2/subscriptions"
-    PREDICTION_ENDPOINT = "http://localhost:8000/notifyCO"
+    API_SERVICE_NAME = "ml-api"
+    PREDICTION_ENDPOINT = f"http://{API_SERVICE_NAME}:8000/notifyCO"
     
     headers = {"Content-Type": "application/json","Content-Type": "application/json",
     "fiware-service": FIWARE_SERVICE,
     "fiware-servicepath": FIWARE_SERVICEPATH}
     payload = {
-        "description": "Notify /prediction when new CO data is available",
+        "description": "Subscribe to SensorCvel updates",
         "subject": {
             "entities": [
                 {
@@ -179,13 +178,8 @@ async def co_prediction(req: Request):
     e2sp_temp = data.get("Temperatura", {}).get("value", 0.0)
     pin_umid = data.get("Umidade", {}).get("value", 0.0)
 
-    entrada = np.array([
-        e2sp_co,
-        e2sp_co_we,
-        e2sp_co_ae,
-        e2sp_temp,
-        pin_umid
-    ]).reshape(1, -1) #1 amostra, 5 features calculados pelo numpy
+    entrada = pd.DataFrame([[data.e2sp_co, data.e2sp_co_we, data.e2sp_co_ae, data.e2sp_temp, data.pin_umid]],columns=['e2sp_co', 'e2sp_co_we', 'e2sp_co_ae', 
+    'e2sp_temp', 'pin_umid'])
     #predição!!!
     resultado = modelo.predict(entrada)
     #corpo para atualizar lá no patch
