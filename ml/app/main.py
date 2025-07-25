@@ -123,11 +123,13 @@ async def calculate_prediction(data: InputData):
 
 #cria inscrição orion fazer o POST quando entidade SensorCvel atualiza
 @app.post("/orion/subscribe", summary="📡 Notificar quando SensorCvel atualizar", tags=['Notification'])
-async def orion_subscripton(req: Request):
+async def orion_subscripton():
     ORION_SUBSCRIPTION_URL = "http://localhost:1026/v2/subscriptions"
-    PREDICTION_ENDPOINT = "http://localhost:8000/prediction"
+    PREDICTION_ENDPOINT = "http://localhost:8000/notifyCO"
     
-    headers = {"Content-Type": "application/json"}
+    headers = {"Content-Type": "application/json","Content-Type": "application/json",
+    "fiware-service": FIWARE_SERVICE,
+    "fiware-servicepath": FIWARE_SERVICEPATH}
     payload = {
         "description": "Notify /prediction when new CO data is available",
         "subject": {
@@ -154,7 +156,9 @@ async def orion_subscripton(req: Request):
         async with httpx.AsyncClient() as client:
             response = await client.post(ORION_SUBSCRIPTION_URL, json=payload, headers=headers)
             response.raise_for_status()
-            return {"status": "subscription criada", "response": response.json()}
+            if response.status_code == 201:
+                return {"status": "Subscription criada com sucesso!"}
+            return {"status": "Subscription resposta recebida", "content": response.text}
     except httpx.HTTPStatusError as e:
         raise HTTPException(status_code=e.response.status_code, detail=e.response.text)
     except Exception as e:
