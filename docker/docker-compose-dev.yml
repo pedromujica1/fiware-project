@@ -14,6 +14,7 @@ services:
     ports:
       - "1026:1026"
     command: -logLevel DEBUG -noCache -dbhost mongodb
+    hostname: orion
     depends_on:
       - mongodb
     healthcheck:

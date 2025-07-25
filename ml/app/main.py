@@ -36,7 +36,7 @@ model_path = os.path.join(os.path.dirname(__file__), 'RF_Regressor.joblib')
 modelo = load('RF_Regressor.joblib') 
 
 
-ORION_BASE_URL = "http://localhost:1026"
+ORION_BASE_URL = os.getenv("ORION_BASE_URL", "http://0.0.0.0:1026")
 ORION_ENTITIES_URL = f"{ORION_BASE_URL}/v2/entities/"
 ORION_SUBSCRIPTIONS_URL = f"{ORION_BASE_URL}/v2/subscriptions"
 ORION_VERSION_URL = f"{ORION_BASE_URL}/version"
@@ -122,7 +122,7 @@ async def calculate_prediction(data: InputData):
 #cria inscrição orion fazer o POST quando entidade SensorCvel atualiza
 @app.post("/orion/subscribe", summary="📡 Notificar quando SensorCvel atualizar", tags=['Notification'])
 async def orion_subscripton():
-    ORION_SUBSCRIPTION_URL = "http://localhost:1026/v2/subscriptions"
+    ORION_SUBSCRIPTION_URL = f"{ORION_BASE_URL}/v2/subscriptions"
     API_SERVICE_NAME = "ml-api"
     PREDICTION_ENDPOINT = f"http://{API_SERVICE_NAME}:8000/notifyCO"
     
@@ -191,7 +191,8 @@ async def co_prediction(req: Request):
     }
     #enviando para o Orion CB
     async with httpx.AsyncClient() as client:
-        response = await client.patch("http://localhost:1026/v2/entities/SensorCvel/attrs", json=payload_CO, headers=ORION_HEADERS)
+        linha_req = f"http://{ORION_BASE_URL}/v2/entities/SensorCvel/attrs"
+        response = await client.patch(linha_req, json=payload_CO, headers=ORION_HEADERS)
         response.raise_for_status()
 
     return {"status": "Enviado para o Orion CB!", "co_corrigido": resultado[0]}

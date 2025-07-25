@@ -81,6 +81,21 @@ services:
       - LoRaWAN
     volumes:
       - grafana_data:/var/lib/grafana
+  #API de predição
+  ml-api:
+    image: pedromujica1/fiware-ml-api:1.0
+    container_name: ml-api
+    hostname: ml-api
+    depends_on:
+      - orion
+    ports:
+      - "8000:8000"
+   
+    networks:
+      - LoRaWAN
+    restart: always
+    environment:
+      - ORION_BASE_URL=http://0.0.0.0:1026
     
 volumes:
   mongo_data_lora: 
