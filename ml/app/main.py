@@ -36,10 +36,10 @@ model_path = os.path.join(os.path.dirname(__file__), 'RF_Regressor.joblib')
 modelo = load('RF_Regressor.joblib') 
 
 
-ORION_BASE_URL = os.getenv("ORION_BASE_URL", "http://0.0.0.0:1026")
-ORION_ENTITIES_URL = f"{ORION_BASE_URL}/v2/entities/"
-ORION_SUBSCRIPTIONS_URL = f"{ORION_BASE_URL}/v2/subscriptions"
-ORION_VERSION_URL = f"{ORION_BASE_URL}/version"
+#ORION_BASE_URL = os.getenv("ORION_BASE_URL", "http://orion:1026")
+ORION_ENTITIES_URL = f"http://orion:1026/v2/entities/"
+ORION_SUBSCRIPTIONS_URL = f"http://orion:1026/v2/subscriptions"
+ORION_VERSION_URL = f"http://orion:1026/version"
 
 
 FIWARE_SERVICE = "openiot"
@@ -63,8 +63,9 @@ ORION_GET_HEADERS = {
 async def async_request(url: str, headers: dict):
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.get(ORION_ENTITIES_URL, headers=ORION_GET_HEADERS)
+            response = await client.get(url, headers=headers)
             response.raise_for_status()
+            print(response.json())
             return response.json()
     except httpx.HTTPStatusError as e:
         return erro_orion(e)
@@ -94,6 +95,7 @@ def welcome():
 async def listar_entidades_orion():
     try:
         entidades = await async_request(ORION_ENTITIES_URL, headers=ORION_GET_HEADERS)
+        print(entidades)
         return JSONResponse(content=entidades)
     except httpx.HTTPStatusError as e:
         return erro_orion(e)
@@ -122,8 +124,8 @@ async def calculate_prediction(data: InputData):
 #cria inscrição orion fazer o POST quando entidade SensorCvel atualiza
 @app.post("/orion/subscribe", summary="📡 Notificar quando SensorCvel atualizar", tags=['Notification'])
 async def orion_subscripton():
-    ORION_SUBSCRIPTION_URL = f"{ORION_BASE_URL}/v2/subscriptions"
-    API_SERVICE_NAME = "ml-api"
+    ORION_SUBSCRIPTION_URL = f"http://orion:1026/v2/subscriptions"
+    API_SERVICE_NAME = "0.0.0.0"
     PREDICTION_ENDPOINT = f"http://{API_SERVICE_NAME}:8000/notifyCO"
     
     headers = {"Content-Type": "application/json","Content-Type": "application/json",
@@ -191,7 +193,7 @@ async def co_prediction(req: Request):
     }
     #enviando para o Orion CB
     async with httpx.AsyncClient() as client:
-        linha_req = f"http://{ORION_BASE_URL}/v2/entities/SensorCvel/attrs"
+        linha_req = f"http://orion:1026/v2/entities/SensorCvel/attrs"
         response = await client.patch(linha_req, json=payload_CO, headers=ORION_HEADERS)
         response.raise_for_status()
 
