@@ -39,14 +39,14 @@ modelo = load('RF_Regressor.joblib')
 #ORION_BASE_URL = os.getenv("ORION_BASE_URL", "http://orion:1026")
 ORION_ENTITIES_URL = f"http://orion:1026/v2/entities/"
 ORION_SUBSCRIPTIONS_URL = f"http://orion:1026/v2/subscriptions"
-ORION_VERSION_URL = f"http://orion:1026/version"
+ORION_VERSION_URL = f"http://orion:1026/version/"
 
 
 FIWARE_SERVICE = "openiot"
 FIWARE_SERVICEPATH = "/airQuality"
 
 ORION_HEADERS = {
-    "Accept": "application/json",
+    "Accept": "*/*",
     "Content-Type": "application/json",
     "fiware-service": FIWARE_SERVICE,
     "fiware-servicepath": FIWARE_SERVICEPATH
@@ -65,8 +65,15 @@ async def async_request(url: str, headers: dict):
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=headers)
             response.raise_for_status()
-            print(response.json())
-            return response.json()
+                   
+            content_type = response.headers.get("content-type", "")
+            
+            if "application/json" in content_type:
+                print(response.json()) 
+                return response.json()
+            else:
+                return response.text
+             
     except httpx.HTTPStatusError as e:
         return erro_orion(e)
     except Exception as e:
