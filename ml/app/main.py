@@ -192,13 +192,14 @@ async def co_prediction(req: Request):
     #Extração do JSON Orion
     data = body.get("data", [])[0]
     #retirada dos campos necessarios
+    #caso não tenha o campo, retorna 0.0
     e2sp_co = data.get("Best_CO", {}).get("value", 0.0)
     e2sp_co_we = data.get("CO_WE", {}).get("value", 0.0)
     e2sp_co_ae = data.get("CO_AE", {}).get("value", 0.0)
     e2sp_temp = data.get("Temperatura", {}).get("value", 0.0)
     pin_umid = data.get("Umidade", {}).get("value", 0.0)
 
-    entrada = pd.DataFrame([[data.e2sp_co, data.e2sp_co_we, data.e2sp_co_ae, data.e2sp_temp, data.pin_umid]],columns=['e2sp_co', 'e2sp_co_we', 'e2sp_co_ae', 
+    entrada = pd.DataFrame([[e2sp_co, e2sp_co_we, e2sp_co_ae, e2sp_temp, pin_umid]],columns=['e2sp_co', 'e2sp_co_we', 'e2sp_co_ae', 
     'e2sp_temp', 'pin_umid'])
     #predição!!!
     resultado = modelo.predict(entrada)
@@ -206,7 +207,7 @@ async def co_prediction(req: Request):
     payload_CO = {
             "CO_Corrigido": {
                 "type": "Float",
-                "value": resultado[0]  # sem arredondar
+                "value": resultado[0]  #valor resposta do modelo
             }
     }
     #enviando para o Orion CB
