@@ -37,9 +37,12 @@ modelo = load('RF_Regressor.joblib')
 
 
 #ORION_BASE_URL = os.getenv("ORION_BASE_URL", "http://orion:1026")
-ORION_ENTITIES_URL = f"http://orion:1026/v2/entities/"
-ORION_SUBSCRIPTIONS_URL = f"http://orion:1026/v2/subscriptions"
-ORION_VERSION_URL = f"http://orion:1026/version/"
+DOCKER_HOST= "orion"
+LOCAL_HOST = "0.0.0.0"
+
+ORION_ENTITIES_URL = f"http://{LOCAL_HOST}:1026/v2/entities/"
+ORION_SUBSCRIPTIONS_URL = f"http://{LOCAL_HOST}:1026/v2/subscriptions"
+ORION_VERSION_URL = f"http://{LOCAL_HOST}:1026/version/"
 
 
 FIWARE_SERVICE = "openiot"
@@ -57,13 +60,27 @@ ORION_GET_HEADERS = {
     "fiware-service": "openiot",
     "fiware-servicepath": "/airQuality"
 }
-# ==============================
+
+
+#Conexão ORION erro
+def erro_orion(e: httpx.HTTPStatusError):
+    return JSONResponse(
+        content={"error": f"Falha na requisição ao Orion: {str(e)}"},
+        status_code=e.response.status_code
+    )
+#erro interno
+def erro_interno(e: Exception):
+    return JSONResponse(
+        content={"error": f"Erro inesperado: {str(e)}"},
+        status_code=500
+    )
 
 #para fazer GET request com o httpx
 async def async_request(url: str, headers: dict):
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=headers)
+            print(url)
             response.raise_for_status()
                    
             content_type = response.headers.get("content-type", "")
@@ -79,18 +96,6 @@ async def async_request(url: str, headers: dict):
     except Exception as e:
         return erro_interno(e)
     
-#Conexão ORION erro
-def erro_orion(e: httpx.HTTPStatusError):
-    return JSONResponse(
-        content={"error": f"Falha na requisição ao Orion: {str(e)}"},
-        status_code=e.response.status_code
-    )
-#erro interno
-def erro_interno(e: Exception):
-    return JSONResponse(
-        content={"error": f"Erro inesperado: {str(e)}"},
-        status_code=500
-    )
 
 @app.get("/",tags=['Welcome!!'])
 def welcome():
@@ -112,8 +117,14 @@ async def listar_entidades_orion():
 #testa conexão
 @app.get("/orion/status", summary="🔗 Testar Conexão com Orion",tags=['Orion CB operations'])
 async def testar_conexao():
-    resultado = await async_request(ORION_VERSION_URL,headers=ORION_HEADERS)
-    return {"status": "Conectado com sucesso!", "versão_orion": resultado}
+    try:
+        async with httpx.AsyncClient() as client:
+                response = await client.get(ORION_VERSION_URL)
+                response.raise_for_status()
+                return JSONResponse(response.json(), status_code=response.status_code)
+    except httpx.HTTPStatusError as e:
+        return erro_orion(e)
+
 
 #request de predição com base no modelo carregado
 @app.post("/prediction", response_model=PredictionResult, tags=['Prediction'])
