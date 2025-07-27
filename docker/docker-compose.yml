@@ -82,7 +82,7 @@ services:
       - grafana_data:/var/lib/grafana
   #API de predição
   ml-api:
-    image: pedromujica1/fiware-ml-api:4.0
+    image: pedromujica1/fiware-ml-api:latest
     container_name: ml-api
     depends_on:
       - orion
