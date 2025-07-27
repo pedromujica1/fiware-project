@@ -141,7 +141,7 @@ async def calculate_prediction(data: InputData):
     return PredictionResult(CO_previsto=resultado[0].round(6))
 
 #cria inscrição orion fazer o POST quando entidade SensorCvel atualiza
-@app.post("/orion/subscribe", summary="📡 Notificar quando SensorCvel atualizar", tags=['Notification'])
+@app.post("/orion/subscribe", summary="📡 Notificar quando Orion CB atualizar", tags=['Notification'])
 async def orion_subscripton():
     ORION_SUBSCRIPTION_URL = f"http://{DOCKER_HOST}:1026/v2/subscriptions"
 
@@ -151,7 +151,7 @@ async def orion_subscripton():
     "fiware-service": FIWARE_SERVICE,
     "fiware-servicepath": FIWARE_SERVICEPATH}
     payload = {
-        "description": "Subscribe to SensorCvel updates",
+        "description": "Subscribe to LoraDevice updates",
         "subject": {
             "entities": [
                 {
@@ -187,11 +187,12 @@ async def orion_subscripton():
 
 
 @app.post("/notifyCO", summary="🌐 Encaminha valor corrigido para Orion CB", tags=['Notification'])
-async def co_prediction():
+async def co_prediction(lora_device: str):
+    #SensorCvel (testes notebook)
     
     async with httpx.AsyncClient() as client:
         # Faz a requisição GET à entidade no Orion CB
-        url = f"http://{DOCKER_HOST}:1026/v2/entities/SensorCvel"
+        url = f"http://{DOCKER_HOST}:1026/v2/entities/{lora_device}"
         headers = {
             "Accept": "application/json",
             "Fiware-Service": "openiot",
@@ -226,7 +227,7 @@ async def co_prediction():
     }
     
     async with httpx.AsyncClient() as client:
-        linha_req = f"http://{DOCKER_HOST}:1026/v2/entities/SensorCvel/attrs"
+        linha_req = f"http://{DOCKER_HOST}:1026/v2/entities/{lora_device}/attrs"
         response = await client.patch(linha_req, json=payload_CO, headers={
             "Content-Type": "application/json",
             "Fiware-Service": "openiot",
