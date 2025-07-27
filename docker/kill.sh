@@ -8,3 +8,6 @@ sudo docker network prune -f
 
 # Força recriação dos containers
 sudo docker compose up -d --force-recreate
+
+#inicia logs
+docker compose logs -f
