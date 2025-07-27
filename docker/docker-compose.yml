@@ -94,6 +94,7 @@ services:
     restart: always
     environment:
       - ORION_BASE_URL=http://orion:1026
+      - API_SERVICE_NAME=ml-api
     
 volumes:
   mongo_data_lora: 

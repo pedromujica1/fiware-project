@@ -38,11 +38,12 @@ modelo = load('RF_Regressor.joblib')
 
 #ORION_BASE_URL = os.getenv("ORION_BASE_URL", "http://orion:1026")
 DOCKER_HOST= "orion"
-LOCAL_HOST = "0.0.0.0"
+LOCAL_HOST = "localhost"
 
-ORION_ENTITIES_URL = f"http://{LOCAL_HOST}:1026/v2/entities/"
-ORION_SUBSCRIPTIONS_URL = f"http://{LOCAL_HOST}:1026/v2/subscriptions"
-ORION_VERSION_URL = f"http://{LOCAL_HOST}:1026/version/"
+ORION_ENTITIES_URL = f"http://{DOCKER_HOST}:1026/v2/entities/"
+ORION_SUBSCRIPTIONS_URL = f"http://{DOCKER_HOST}:1026/v2/subscriptions"
+ORION_VERSION_URL = f"http://{DOCKER_HOST}:1026/version/"
+API_SERVICE_NAME = os.getenv("API_SERVICE_NAME", "ml-api")
 
 
 FIWARE_SERVICE = "openiot"
@@ -137,13 +138,13 @@ async def calculate_prediction(data: InputData):
     # Realiza a predição
     resultado = modelo.predict(entrada)
 
-    return PredictionResult(CO_previsto=resultado[0])
+    return PredictionResult(CO_previsto=resultado[0].round(6))
 
 #cria inscrição orion fazer o POST quando entidade SensorCvel atualiza
 @app.post("/orion/subscribe", summary="📡 Notificar quando SensorCvel atualizar", tags=['Notification'])
 async def orion_subscripton():
-    ORION_SUBSCRIPTION_URL = f"http://orion:1026/v2/subscriptions"
-    API_SERVICE_NAME = "0.0.0.0"
+    ORION_SUBSCRIPTION_URL = f"http://{DOCKER_HOST}:1026/v2/subscriptions"
+
     PREDICTION_ENDPOINT = f"http://{API_SERVICE_NAME}:8000/notifyCO"
     
     headers = {"Content-Type": "application/json","Content-Type": "application/json",
@@ -154,8 +155,9 @@ async def orion_subscripton():
         "subject": {
             "entities": [
                 {
-                    "id": "SensorCvel",
+                    "idPattern": ".*",
                     "type": "LoraDevice"
+                    #para todos "idPattern": ".*"  e para especifico:"id": "SensorCvel"
                 }
             ],
             "condition": {
@@ -185,19 +187,31 @@ async def orion_subscripton():
 
 
 @app.post("/notifyCO", summary="🌐 Encaminha valor corrigido para Orion CB", tags=['Notification'])
-async def co_prediction(req: Request):
-    body = await req.json()
+async def co_prediction():
+    
+    async with httpx.AsyncClient() as client:
+        # Faz a requisição GET à entidade no Orion CB
+        url = f"http://{DOCKER_HOST}:1026/v2/entities/SensorCvel"
+        headers = {
+            "Accept": "application/json",
+            "Fiware-Service": "openiot",
+            "Fiware-ServicePath": "/airQuality"
+        }
+        response = await client.get(url, headers=headers)
+        response.raise_for_status()
+        body = response.json()
     
     
     #Extração do JSON Orion
-    data = body.get("data", [])[0]
+    #print(body)
+
     #retirada dos campos necessarios
     #caso não tenha o campo, retorna 0.0
-    e2sp_co = data.get("Best_CO", {}).get("value", 0.0)
-    e2sp_co_we = data.get("CO_WE", {}).get("value", 0.0)
-    e2sp_co_ae = data.get("CO_AE", {}).get("value", 0.0)
-    e2sp_temp = data.get("Temperatura", {}).get("value", 0.0)
-    pin_umid = data.get("Umidade", {}).get("value", 0.0)
+    e2sp_co = body.get("Best_CO", {}).get("value", 0.0)
+    e2sp_co_we = body.get("CO_WE", {}).get("value", 0.0)
+    e2sp_co_ae = body.get("CO_AE", {}).get("value", 0.0)
+    e2sp_temp = body.get("Temperatura", {}).get("value", 0.0)
+    pin_umid = body.get("Umidade", {}).get("value", 0.0)
 
     entrada = pd.DataFrame([[e2sp_co, e2sp_co_we, e2sp_co_ae, e2sp_temp, pin_umid]],columns=['e2sp_co', 'e2sp_co_we', 'e2sp_co_ae', 
     'e2sp_temp', 'pin_umid'])
@@ -206,14 +220,23 @@ async def co_prediction(req: Request):
     #corpo para atualizar lá no patch
     payload_CO = {
             "CO_Corrigido": {
-                "type": "Float",
-                "value": resultado[0]  #valor resposta do modelo
+                "type": "Number",
+                "value": round(float(resultado[0]), 6)  #valor resposta do modelo
             }
     }
-    #enviando para o Orion CB
+    
     async with httpx.AsyncClient() as client:
-        linha_req = f"http://orion:1026/v2/entities/SensorCvel/attrs"
-        response = await client.patch(linha_req, json=payload_CO, headers=ORION_HEADERS)
-        response.raise_for_status()
+        linha_req = f"http://{DOCKER_HOST}:1026/v2/entities/SensorCvel/attrs"
+        response = await client.patch(linha_req, json=payload_CO, headers={
+            "Content-Type": "application/json",
+            "Fiware-Service": "openiot",
+            "Fiware-ServicePath": "/airQuality"
+    })
+    print(response.text)
+    response.raise_for_status()
 
-    return {"status": "Enviado para o Orion CB!", "co_corrigido": resultado[0]}
+    return {
+        "status": "Atualizado no Orion CB!",
+        "co_corrigido": round(float(resultado[0]), 6)
+    }
+
