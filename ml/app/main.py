@@ -166,7 +166,7 @@ async def orion_subscripton():
         },
         "notification": {
             "http": {
-                "url": PREDICTION_ENDPOINT
+                "url": PREDICTION_ENDPOINT#<URL_DA_API>
             },
             "attrs": ["Best_CO", "CO_WE", "CO_AE", "Temperatura", "Umidade"]
         },
