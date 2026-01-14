@@ -95,6 +95,23 @@ services:
     environment:
       - ORION_BASE_URL=http://orion:1026
       - API_SERVICE_NAME=ml-api
+
+  #servidor mosquito
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./config:/mosquitto/config
+      - ./data:/mosquitto/data
+      - ./log:/mosquitto/log
+    #permite interagir com o broker pela linha de comando
+    stdin_open: true
+    tty: true
+    networks:
+      - LoRaWAN
     
 volumes:
   mongo_data_lora: 
