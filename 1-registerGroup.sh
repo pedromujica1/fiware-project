@@ -1,20 +1,4 @@
-##!/usr/bin/env bash
-
-#start stack
-docker compose up -d
-
-# wait service to be up
-wait=0
-HOST="http://localhost:4041/iot/about"
-while [ "$(curl -s -o /dev/null -L -w ''%{http_code}'' $HOST)" != "200" ] && [ $wait -le 60 ]
-do
-  echo "Waiting for IoT Agent..."
-  sleep 5
-  wait=$((wait+5))
-  echo "Elapsed time: $wait"
-done
-
-echo 'registering device group'
+#!/bin/bash
 
 curl --location --request POST 'localhost:4041/iot/services' \
 --header 'fiware-service: smartgondor' \
@@ -23,23 +7,23 @@ curl --location --request POST 'localhost:4041/iot/services' \
 --data-raw '{
     "services": [
         {
-            "entity_type": "WeatherObserved",
+            "entity_type": "WeatherStation",
             "apikey": "",
             "resource": "70B3D57ED00006B2",
             "attributes": [
                 {
-                    "object_id": "temperature_1",
-                    "name": "temperature",
+                    "object_id": "temperatura_1",
+                    "name": "temperatura",
                     "type": "Number"
                 },
                 {
-                    "object_id": "barometric_pressure_0",
-                    "name": "pressure",
+                    "object_id": "pressao_barometrica_0",
+                    "name": "pressao",
                     "type": "Number"
                 },
                 {
-                    "object_id": "relative_humidity_2",
-                    "name": "relative_humidity",
+                    "object_id": "umidade_relativa_2",
+                    "name": "umidade_relativa",
                     "type": "Number"
                 }
             ],
