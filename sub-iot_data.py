@@ -56,8 +56,8 @@ HEADERS = {
 # ==========================
 # Identificação do dispositivo
 # ==========================
-DEVICE_ID = "teste6"
-ENTITY_NAME = "agente5"
+DEVICE_ID = "teste2"
+ENTITY_NAME = "agente2"
 ENTITY_TYPE = "LoraDevice"
 
 # ==========================
@@ -68,9 +68,9 @@ APP_SERVER_USERNAME = "pedromujica1"
 APP_SERVER_PASSWORD = "micelinus536"
 
 APP_EUI = "localApp"
-DEV_EUI = "0000000000000001"
+DEV_EUI = "123456789"
 APPLICATION_ID = "demoLocal"
-APPLICATION_KEY = "0000000000000000000000000000001"
+APPLICATION_KEY = "micelinus536"
 DATA_MODEL = "application_server"
 
 # ==========================
@@ -94,7 +94,7 @@ payload = {
                         "host": APP_SERVER_HOST,
                         "username": APP_SERVER_USERNAME,
                         "password": APP_SERVER_PASSWORD,
-                        "provider": "TTN"
+                        "provider": "json"
                     },
                     "app_eui": APP_EUI,
                     "dev_eui": DEV_EUI,
