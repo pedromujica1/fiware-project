@@ -11,7 +11,7 @@ services:
     extends:
       file: docker-compose-dev.yml
       service: orion
-    command: -dbhost mongodb -port 1026 -logLevel INFO
+    command: -dbURI mongodb://mongodb:27017 -logLevel DEBUG -noCache -logForHumans
 
   iotagent-lora:
     depends_on:
@@ -66,8 +66,6 @@ services:
         - "CYGNUS_API_PORT=5080"
         - "CYGNUS_SERVICE_PORT=5055"
     
-
-  
   grafana:
     image: grafana/grafana
     depends_on:
@@ -99,6 +97,7 @@ services:
   #servidor mosquito
   mosquitto:
     image: eclipse-mosquitto:latest
+    hostname: mqtt
     container_name: mosquitto
     ports:
       - "1883:1883"

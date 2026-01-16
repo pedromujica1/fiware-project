@@ -10,10 +10,10 @@ services:
       - LoRaWAN
 
   orion:
-    image: fiware/orion:${ORION_VERSION:-3.3.1}
+    image: fiware/orion:latest
     ports:
       - "1026:1026"
-    command: -logLevel DEBUG -noCache -dbhost mongodb
+    command: -dbURI mongodb://mongodb:27017 -logLevel DEBUG -noCache INFO -logForHumans
     hostname: orion
     depends_on:
       - mongodb

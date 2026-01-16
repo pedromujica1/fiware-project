@@ -1,4 +1,5 @@
 #!/bin/bash
+echo 'registering device group'
 
 curl --location --request POST 'localhost:4041/iot/services' \
 --header 'fiware-service: smartgondor' \
@@ -7,23 +8,23 @@ curl --location --request POST 'localhost:4041/iot/services' \
 --data-raw '{
     "services": [
         {
-            "entity_type": "WeatherStation",
+            "entity_type": "WeatherObserved",
             "apikey": "",
             "resource": "70B3D57ED00006B2",
             "attributes": [
                 {
-                    "object_id": "temperatura_1",
-                    "name": "temperatura",
+                    "object_id": "temperature_1",
+                    "name": "temperature",
                     "type": "Number"
                 },
                 {
-                    "object_id": "pressao_barometrica_0",
-                    "name": "pressao",
+                    "object_id": "barometric_pressure_0",
+                    "name": "pressure",
                     "type": "Number"
                 },
                 {
-                    "object_id": "umidade_relativa_2",
-                    "name": "umidade_relativa",
+                    "object_id": "relative_humidity_2",
+                    "name": "relative_humidity",
                     "type": "Number"
                 }
             ],
