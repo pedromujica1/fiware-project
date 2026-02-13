@@ -6,8 +6,8 @@ entidade = f"urn:WeatherObserved:{device}"
 ORION_URL = f"http://localhost:1026/v2/entities/{entidade}"
 
 HEADERS = {
-    "fiware-service": "smartgondor",
-    "fiware-servicepath": "/environment"
+    "fiware-service": "openiot",
+    "fiware-servicepath": "/airQuality"
 }
 
 response = requests.get(ORION_URL, headers=HEADERS)

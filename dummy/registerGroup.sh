@@ -2,8 +2,8 @@
 echo 'registering device group'
 
 curl --location --request POST 'localhost:4041/iot/services' \
---header 'fiware-service: smartgondor' \
---header 'fiware-servicePath: /environment' \
+--header 'fiware-service: openiot' \
+--header 'fiware-servicePath: /airQuality' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "services": [
