@@ -1,12 +1,16 @@
+
 import json
 import time
 import base64
 import random
 import argparse
 from paho.mqtt import client as mqtt_client
+from paho.mqtt import client as mqtt_client
+from paho.mqtt.client import CallbackAPIVersion
+
 
 #exemplo de uso
-#python3 send-data.py --deviceIni 0 --deviceFim 10 --interval 1
+# python3 send-data.py --id_device {}  --interval 1
 #10 dispositivos a cada 1 segundo
 
 #config mqtt
@@ -64,8 +68,11 @@ def device_id(index):
     return f"myDevice{index}"
 
 #cliente mqtt
-def connect_mqtt(client_id):
-    client = mqtt_client.Client(client_id=client_id)
+def connect_mqtt(client_id: str):
+    client = mqtt_client.Client(
+        client_id=client_id,
+        callback_api_version=CallbackAPIVersion.VERSION2
+    )
     client.username_pw_set(USERNAME, PASSWORD)
     client.connect(BROKER, PORT)
     return client
