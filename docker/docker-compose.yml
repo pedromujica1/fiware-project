@@ -41,6 +41,8 @@ services:
         - "POSTGRES_DB=postgres"
     volumes:
         - postgres_data:/var/lib/postgresql/data
+        - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
   
   cygnus:
     image: fiware/cygnus-ngsi:latest
@@ -65,6 +67,8 @@ services:
         - "CYGNUS_LOG_LEVEL=DEBUG"
         - "CYGNUS_API_PORT=5080"
         - "CYGNUS_SERVICE_PORT=5055"
+    volumes:
+      - ./cygnus/agent.conf:/opt/apache-flume/conf/agent.conf
     
   grafana:
     image: grafana/grafana
