@@ -24,6 +24,8 @@ services:
       - "4041:4041"
     networks:
       - LoRaWAN
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=4096
 
   postgres-db:
     image: postgres:latest
