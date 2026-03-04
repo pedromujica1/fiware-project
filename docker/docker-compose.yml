@@ -11,7 +11,7 @@ services:
     extends:
       file: docker-compose-dev.yml
       service: orion
-    command: -dbURI mongodb://mongodb:27017 -logLevel DEBUG -noCache -logForHumans
+    command: -dbURI mongodb://mongodb:27017 -logLevel INFO -logForHumans -statCounters -statNotifQueue -notificationMode threadpool
 
   iotagent-lora:
     depends_on:
