@@ -20,5 +20,5 @@ curl --location 'http://localhost:1026/v2/subscriptions/' \
       "url": "http://cygnus:5055/notify"
     }
   },
-  "throttling": 5
+  "throttling": 0
 }'

@@ -14,6 +14,7 @@ services:
     command: -dbURI mongodb://mongodb:27017 -logLevel INFO -logForHumans -statCounters -statNotifQueue -notificationMode threadpool
 
   iotagent-lora:
+    restart: unless-stopped
     depends_on:
       - orion
       - mongodb
@@ -26,6 +27,8 @@ services:
       - LoRaWAN
     environment:
       - NODE_OPTIONS=--max-old-space-size=4096
+    volumes:
+    - ./config-docker.js:/opt/iotagent-lora/docker/config-docker.js
 
   postgres-db:
     image: postgres:latest
@@ -67,7 +70,7 @@ services:
         - "CYGNUS_POSTGRESQL_PASS=password"
         - "CYGNUS_POSTGRESQL_ENABLE_CACHE=true"
         - "CYGNUS_POSTGRESQL_SERVICE_PORT=5055"
-        - "CYGNUS_LOG_LEVEL=DEBUG"
+        - "CYGNUS_LOG_LEVEL=INFO"
         - "CYGNUS_API_PORT=5080"
         - "CYGNUS_SERVICE_PORT=5055"
     volumes:

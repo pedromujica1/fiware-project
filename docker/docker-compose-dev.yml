@@ -13,7 +13,7 @@ services:
     image: fiware/orion:latest
     ports:
       - "1026:1026"
-    command: -dbURI mongodb://mongodb:27017 -logLevel DEBUG -noCache INFO -logForHumans
+    command: -dbURI mongodb://mongodb:27017 -logLevel INFO -noCache INFO -logForHumans
     hostname: orion
     depends_on:
       - mongodb
