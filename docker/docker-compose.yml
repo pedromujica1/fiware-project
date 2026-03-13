@@ -27,28 +27,26 @@ services:
       - LoRaWAN
     environment:
       - NODE_OPTIONS=--max-old-space-size=4096
-    volumes:
-    - ./config-docker.js:/opt/iotagent-lora/docker/config-docker.js
 
   postgres-db:
-    image: postgres:latest
+    image: postgres:18
     hostname: postgres-db
     container_name: db-postgres
     expose:
-        - "5432"
+      - "5432"
     ports:
-        - "5432:5432"
+      - "5432:5432"
     networks:
-        - LoRaWAN
+      - LoRaWAN
     environment:
-        - "POSTGRES_PASSWORD=password"
-        - "POSTGRES_USER=postgres"
-        - "POSTGRES_DB=postgres"
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
     volumes:
-        - postgres_data:/var/lib/postgresql/data
-        - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+      - postgres_data:/var/lib/postgresql
+      - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
     command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
-     
+      
   
   cygnus:
     image: fiware/cygnus-ngsi:latest
