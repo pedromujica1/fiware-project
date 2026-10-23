@@ -65,16 +65,10 @@ ORION_GET_HEADERS = {
 
 #Conexão ORION erro
 def erro_orion(e: httpx.HTTPStatusError):
-    return JSONResponse(
-        content={"error": f"Falha na requisição ao Orion: {str(e)}"},
-        status_code=e.response.status_code
-    )
+    return JSONResponse(content={"error": f"Falha na requisição ao Orion: {str(e)}"},status_code=e.response.status_code)
 #erro interno
 def erro_interno(e: Exception):
-    return JSONResponse(
-        content={"error": f"Erro inesperado: {str(e)}"},
-        status_code=500
-    )
+    return JSONResponse(content={"error": f"Erro inesperado: {str(e)}"},status_code=500)
 
 #para fazer GET request com o httpx
 async def async_request(url: str, headers: dict):
