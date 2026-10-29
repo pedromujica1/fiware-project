@@ -89,7 +89,7 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
   
-  API de predição
+  #API de predição
   ml-api:
     image: pedromujica1/fiware-ml-api:4.0
     container_name: ml-api
@@ -105,24 +105,6 @@ services:
       - ORION_BASE_URL=http://orion:1026
       - API_SERVICE_NAME=ml-api
       
-
-  #servidor mosquito
-  mosquitto:
-    image: eclipse-mosquitto:latest
-    hostname: mqtt
-    container_name: mosquitto
-    ports:
-      - "1883:1883"
-      - "9002:9001"
-    volumes:
-      - ./config:/mosquitto/config
-      - ./data:/mosquitto/data
-      - ./log:/mosquitto/log
-    #permite interagir com o broker pela linha de comando
-    stdin_open: true
-    tty: true
-    networks:
-      - LoRaWAN
 
   #cadvisor para metricas
   cadvisor:
