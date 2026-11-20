@@ -1,0 +1,218 @@
+# Escalabilidade vertical: limites de CPU/memória por serviço, parametrizados por variável de ambiente.
+# Arquivo autocontido: os serviços mongodb e orion do docker-compose-dev.yml foram incorporados aqui
+# (sem uso de "extends"), então o docker-compose-dev.yml não é mais necessário para este experimento.
+#
+# Uso (um nível por vez, exemplo variando só o Orion):
+#   ORION_CPUS=0.5 docker compose up -d --force-recreate
+# Os valores do baseline ficam no arquivo .env ao lado deste compose (carregado automaticamente).
+# Os defaults após ':-' abaixo repetem o baseline caso uma variável falte no .env.
+#
+# Observações:
+# - Os limites são tetos (não reservas): a soma dos tetos pode passar de 8 CPUs.
+# - memswap_limit == mem_limit desativa o swap do container, para o limite de memória não ser mascarado.
+# - Confira o que foi aplicado com:
+#     docker inspect <container> --format '{{.HostConfig.NanoCpus}} {{.HostConfig.Memory}}'
+#   (0.5 CPU = 500000000 NanoCpus)
+
+services:
+  mongodb:
+    image: mongo:4.4
+    hostname: mongodb
+    ports:
+      - "27017:27017"
+    networks:
+      - LoRaWAN
+    volumes:
+      - mongo_data_lora:/data/db
+    # Fixa o cache do WiredTiger. O padrão do Mongo é ~50% de (RAM do host - 1 GB), ou seja, bem acima do
+    # limite do container, o que pode causar OOM-kill. Ao variar MONGO_MEM, varie este valor junto (~50% de (MEM - 1g)).
+    command: --wiredTigerCacheSizeGB ${MONGO_CACHE_GB:-1.5}
+    cpus: ${MONGO_CPUS:-2}
+    mem_limit: ${MONGO_MEM:-4g}
+    memswap_limit: ${MONGO_MEM:-4g}
+
+  orion:
+    image: fiware/orion:latest
+    hostname: orion
+    ports:
+      - "1026:1026"
+    command: -dbURI mongodb://mongodb:27017 -logLevel INFO -logForHumans -statCounters -statNotifQueue -notificationMode threadpool
+    depends_on:
+      - mongodb
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:1026/version"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    networks:
+      - LoRaWAN
+    cpus: ${ORION_CPUS:-2}
+    mem_limit: ${ORION_MEM:-2g}
+    memswap_limit: ${ORION_MEM:-2g}
+
+  iotagent-lora:
+    restart: unless-stopped
+    depends_on:
+      - orion
+      - mongodb
+    entrypoint: bin/iotagent-lora docker/config-docker.js
+    hostname: iotagent-lora
+    image: ioeari/iotagent-lora
+    ports:
+      - "4041:4041"
+    networks:
+      - LoRaWAN
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=4096
+    # Heap máximo do Node = 4096 MB, então o limite de memória precisa ficar acima disso
+    cpus: ${IOTA_CPUS:-1}
+    mem_limit: ${IOTA_MEM:-5g}
+    memswap_limit: ${IOTA_MEM:-5g}
+
+  postgres-db:
+    image: postgres:16
+    hostname: postgres-db
+    container_name: db-postgres
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
+    networks:
+      - LoRaWAN
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+    cpus: ${PG_CPUS:-2}
+    # postgresql.conf não define shared_buffers (padrão 128MB), então 3g é folgado para este volume de dados
+    mem_limit: ${PG_MEM:-3g}
+    memswap_limit: ${PG_MEM:-3g}
+
+  cygnus:
+    image: fiware/cygnus-ngsi:latest
+    hostname: cygnus
+    container_name: fiware-cygnus
+    networks:
+      - LoRaWAN
+    depends_on:
+      - postgres-db
+    expose:
+      - "5080"
+    ports:
+      - "5055:5055"
+      - "5080:5080"
+    environment:
+      - "CYGNUS_POSTGRESQL_HOST=postgres-db"
+      - "CYGNUS_POSTGRESQL_PORT=5432"
+      - "CYGNUS_POSTGRESQL_USER=postgres"
+      - "CYGNUS_POSTGRESQL_PASS=password"
+      - "CYGNUS_POSTGRESQL_ENABLE_CACHE=true"
+      - "CYGNUS_POSTGRESQL_SERVICE_PORT=5055"
+      - "CYGNUS_LOG_LEVEL=INFO"
+      - "CYGNUS_API_PORT=5080"
+      - "CYGNUS_SERVICE_PORT=5055"
+    volumes:
+      - ./cygnus/agent.conf:/tmp/agent.conf:ro
+    command: >
+      /bin/sh -c "cp /tmp/agent.conf /opt/apache-flume/conf/agent.conf
+      && exec /cygnus-entrypoint.sh"
+    cpus: ${CYGNUS_CPUS:-2}
+    mem_limit: ${CYGNUS_MEM:-4g}
+    memswap_limit: ${CYGNUS_MEM:-4g}
+
+  # servidor mosquitto
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    hostname: mqtt
+    container_name: mosquitto
+    ports:
+      - "1883:1883"
+      - "9002:9001"
+    volumes:
+      - ./config:/mosquitto/config
+      - ./data:/mosquitto/data
+      - ./log:/mosquitto/log
+    # permite interagir com o broker pela linha de comando
+    stdin_open: true
+    tty: true
+    networks:
+      - LoRaWAN
+    cpus: ${MQTT_CPUS:-1}
+    mem_limit: ${MQTT_MEM:-1g}
+    memswap_limit: ${MQTT_MEM:-1g}
+
+  # cadvisor para métricas (limite fixo, não varia entre os testes)
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - '8080:8080'
+    restart: unless-stopped
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - LoRaWAN
+    cpus: 1
+    mem_limit: 1g
+
+  # prometheus para guardar os dados (limite fixo, não varia entre os testes)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - cadvisor
+    networks:
+      - LoRaWAN
+    cpus: 1
+    mem_limit: 2g
+
+  # grafana:
+  #   image: grafana/grafana
+  #   depends_on:
+  #       - postgres-db
+  #   ports:
+  #       - '3003:3000'
+  #   environment:
+  #       - GF_INSTALL_PLUGINS=orchestracities-map-panel,grafana-clock-panel,grafana-worldmap-panel
+  #   networks:
+  #     - LoRaWAN
+  #   volumes:
+  #     - grafana_data:/var/lib/grafana
+
+  # API de predição
+  # ml-api:
+  #   image: pedromujica1/fiware-ml-api:4.0
+  #   container_name: ml-api
+  #   depends_on:
+  #     - orion
+  #   ports:
+  #     - "8000:8000"
+  #   networks:
+  #     - LoRaWAN
+  #   restart: always
+  #   environment:
+  #     - ORION_BASE_URL=http://orion:1026
+  #     - API_SERVICE_NAME=ml-api
+
+volumes:
+  mongo_data_lora:
+  lora_device_data:
+  postgres_data:
+  grafana_data:
+
+networks:
+  LoRaWAN: {}

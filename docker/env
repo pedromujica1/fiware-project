@@ -1,0 +1,36 @@
+# Carregado automaticamente pelo docker compose (precisa estar na mesma pasta do docker-compose.yaml).
+# Para testar um nível, altere UMA variável aqui (ou sobrescreva na linha de comando) e rode:
+#   docker compose up -d --force-recreate
+# Exemplo só para uma rodada:  ORION_CPUS=0.5 docker compose up -d --force-recreate
+
+# Nome do projeto: os containers ficam fiware-orion-1, fiware-mongodb-1, fiware-iotagent-lora-1 ...
+COMPOSE_PROJECT_NAME=fiware
+
+# ===== BASELINE =====
+# CPU: número de CPUs lógicas (0.5 = meio núcleo). Memória: 512m, 2g, ...
+# Os limites são tetos, não reservas. Soma dos tetos de memória do baseline ~22g (+3g de cadvisor/prometheus no compose).
+
+# Orion Context Broker
+ORION_CPUS=2
+ORION_MEM=2g
+
+# IoT Agent LoRa (Node com heap máximo de 4096 MB: o limite de memória precisa ficar acima disso)
+IOTA_CPUS=1
+IOTA_MEM=5g
+
+# MongoDB (MONGO_CACHE_GB ~ 50% de (MONGO_MEM - 1g); ao mudar MONGO_MEM, mude este valor junto)
+MONGO_CPUS=2
+MONGO_MEM=4g
+MONGO_CACHE_GB=1.5
+
+# PostgreSQL
+PG_CPUS=2
+PG_MEM=3g
+
+# Cygnus (JVM: o heap padrão é ~25% do limite do container)
+CYGNUS_CPUS=2
+CYGNUS_MEM=4g
+
+# Mosquitto
+MQTT_CPUS=1
+MQTT_MEM=1g
